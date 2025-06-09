@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>draw a space-filling curve of arbitrary size</title>
+<script>
+// Author: Lutz Tautenhahn, 2003, 2025
+// This is an updated version of the original code from 2003 at
+// www.lutanho.net/pic2html/draw_sfc.html and www.lutanho.net/pic2html/spacefilling.html
+// This software is provided "as is", without a warranty of any kind
+// License: Apache License, Version 2.0
+
+//2003 code changes: "l"->-1, "m"->0, "r"->1, replaced Math.round(), changed abs(...), and others
+function go(x0, y0, dxl, dyl, dxr, dyr, dir)
+{ //x0, y0: start corner looking to the center of the rectangle
+  //dxl, dyl: vector from the start corner to the left corner of the rectangle
+  //dxr, dyr: vector from the start corner to the right corner of the rectangle
+  //dir: direction to go - -1=left, 0=middle, 1=right
+  //msg("go: "+x0+", "+y0+", "+dxl+", "+dyl+", "+dxr+", "+dyr+", "+dir);
+  //render if 2x3 or smaller
+  var al=abs(dxl+dyl), ar=abs(dxr+dyr);
+  if (al*ar<=6)
+  { var ddx, ddy, ii;
+    if (al==1)
+    { ddx=(dxr<0)?-1:((dxr>0)?1:0); //dxr/ar;
+      ddy=(dyr<0)?-1:((dyr>0)?1:0); //dyr/ar;
+      for (ii=0; ii<ar; ii++)
+        render(x0+ii*ddx+(dxl+ddx-1)/2, y0+ii*ddy+(dyl+ddy-1)/2, dir);
+      return;  
+    }
+    if (ar==1)
+    { ddx=(dxl<0)?-1:((dxl>0)?1:0); //dxl/al;
+      ddy=(dyl<0)?-1:((dyl>0)?1:0); //dyl/al;
+      for (ii=0; ii<al; ii++)
+        render(x0+ii*ddx+(dxr+ddx-1)/2, y0+ii*ddy+(dyr+ddy-1)/2, dir);    
+      return;
+    }
+    if (dir==-1)
+    { ddx=(dxr<0)?-1:((dxr>0)?1:0); //dxr/ar;
+      ddy=(dyr<0)?-1:((dyr>0)?1:0); //dyr/ar;
+      for (ii=0; ii<ar; ii++)
+        render(x0+ii*ddx+(dxl/2+ddx-1)/2, y0+ii*ddy+(dyl/2+ddy-1)/2, dir);
+      for (ii=ar-1; ii>=0; ii--)
+        render(x0+ii*ddx+(dxl+dxl/2+ddx-1)/2, y0+ii*ddy+(dyl+dyl/2+ddy-1)/2, dir);        
+      return;  
+    } 
+    if (dir==1)
+    { ddx=(dxl<0)?-1:((dxl>0)?1:0); //dxl/al;
+      ddy=(dyl<0)?-1:((dyl>0)?1:0); //dyl/al;
+      for (ii=0; ii<al; ii++)
+        render(x0+ii*ddx+(dxr/2+ddx-1)/2, y0+ii*ddy+(dyr/2+ddy-1)/2, dir);
+      for (ii=al-1; ii>=0; ii--)
+        render(x0+ii*ddx+(dxr+dxr/2+ddx-1)/2, y0+ii*ddy+(dyr+dyr/2+ddy-1)/2, dir);        
+      return;  
+    } 
+    if (dir==0)
+    { if (ar==3)
+      { ddx=(dxr<0)?-1:((dxr>0)?1:0); //dxr/ar;
+        ddy=(dyr<0)?-1:((dyr>0)?1:0); //dyr/ar;
+        render(x0+(dxl/2+ddx-1)/2, y0+(dyl/2+ddy-1)/2, dir);
+        render(x0+(dxl+dxl/2+ddx-1)/2, y0+(dyl+dyl/2+ddy-1)/2, dir);
+        render(x0+ddx+(dxl+dxl/2+ddx-1)/2, y0+ddy+(dyl+dyl/2+ddy-1)/2, dir);
+        render(x0+ddx+(dxl/2+ddx-1)/2, y0+ddy+(dyl/2+ddy-1)/2, dir);
+        render(x0+2*ddx+(dxl/2+ddx-1)/2, y0+2*ddy+(dyl/2+ddy-1)/2, dir);
+        render(x0+2*ddx+(dxl+dxl/2+ddx-1)/2, y0+2*ddy+(dyl+dyl/2+ddy-1)/2, dir);
+        return;
+      }  
+      if (al==3)
+      { ddx=(dxl<0)?-1:((dxl>0)?1:0); //dxl/al;
+        ddy=(dyl<0)?-1:((dyl>0)?1:0); //dyl/al;
+        render(x0+(dxr/2+ddx-1)/2, y0+(dyr/2+ddy-1)/2, dir);
+        render(x0+(dxr+dxr/2+ddx-1)/2, y0+(dyr+dyr/2+ddy-1)/2, dir);
+        render(x0+ddx+(dxr+dxr/2+ddx-1)/2, y0+ddy+(dyr+dyr/2+ddy-1)/2, dir);
+        render(x0+ddx+(dxr/2+ddx-1)/2, y0+ddy+(dyr/2+ddy-1)/2, dir);
+        render(x0+2*ddx+(dxr/2+ddx-1)/2, y0+2*ddy+(dyr/2+ddy-1)/2, dir);
+        render(x0+2*ddx+(dxr+dxr/2+ddx-1)/2, y0+2*ddy+(dyr+dyr/2+ddy-1)/2, dir);
+        return;
+      }  
+    }      
+    //msg("renderError");
+    return;
+  }
+  //divide into 2 parts if necessary
+  //if (2*(abs(dxl)+abs(dyl))>3*(abs(dxr)+abs(dyr))) //left side much longer than right side
+  if (2*abs(dxl+dyl)+d>3*abs(dxr+dyr)) //update 2025
+  { var dxl2=1+dxl>>1; //dxl2=Math.round(dxl/2);
+    var dyl2=1+dyl>>1; //dyl2=Math.round(dyl/2);
+    if ((dxr+dyr)%2==0) //right side is even
+    { if ((dxl+dyl)%2==0) //make 2 parts from even side
+      { if (dir==-1) 
+        { if ((dxl+dyl)%4==0) //make 2 parts even-even from even side
+          { go(x0, y0, dxl2, dyl2, dxr, dyr, -1);
+            go(x0+dxl2, y0+dyl2, dxl-dxl2, dyl-dyl2, dxr, dyr, -1);
+          }
+          else //make 2 parts odd-odd from even side
+          { go(x0, y0, dxl2, dyl2, dxr, dyr, 0);
+            go(x0+dxl2+dxr, y0+dyl2+dyr, -dxr, -dyr, dxl-dxl2, dyl-dyl2, 0);
+          }
+          return;
+        }
+      }
+      else //make 2 parts from odd side
+      { if (dir==0)
+        { if ((dxl2+dyl2)%2==0)
+          { go(x0, y0, dxl2, dyl2, dxr, dyr, -1);
+            go(x0+dxl2, y0+dyl2, dxl-dxl2, dyl-dyl2, dxr, dyr, 0);
+          }
+          else
+          { go(x0, y0, dxl2, dyl2, dxr, dyr, 0);
+            go(x0+dxl2+dxr, y0+dyl2+dyr, -dxr, -dyr, dxl-dxl2, dyl-dyl2, 1);
+          }
+          return;
+        }
+      }
+    }
+    else //right side is odd
+    { if (dir==-1)
+      { go(x0, y0, dxl2, dyl2, dxr, dyr, -1);
+        go(x0+dxl2, y0+dyl2, dxl-dxl2, dyl-dyl2, dxr, dyr, -1);
+        return;
+      }
+      if (dir==0)
+      { go(x0, y0, dxl2, dyl2, dxr, dyr, -1);
+        go(x0+dxl2, y0+dyl2, dxl-dxl2, dyl-dyl2, dxr, dyr, 0);
+        return;
+      }      
+    }
+  }
+  //if (2*(abs(dxr)+abs(dyr))>3*(abs(dxl)+abs(dyl))) //right side much longer than left side
+  if (2*abs(dxr+dyr)+d>3*abs(dxl+dyl)) //update 2025
+  { var dxr2=1+dxr>>1; //Math.round(dxr/2);
+    var dyr2=1+dyr>>1; //Math.round(dyr/2);
+    if ((dxl+dyl)%2==0) //left side is even
+    { if ((dxr+dyr)%2==0) //make 2 parts from even side
+      { if (dir==1) 
+        { if ((dxr+dyr)%4==0) //make 2 parts even-even from even side
+          { go(x0, y0, dxl, dyl, dxr2, dyr2, 1);
+            go(x0+dxr2, y0+dyr2, dxl, dyl, dxr-dxr2, dyr-dyr2, 1);
+          }
+          else //make 2 parts odd-odd from even side
+          { go(x0, y0, dxl, dyl, dxr2, dyr2, 0);
+            go(x0+dxr2+dxl, y0+dyr2+dyl, dxr-dxr2, dyr-dyr2, -dxl, -dyl, 0);
+          }
+          return;
+        }
+      }
+      else //make 2 parts from odd side
+      { if (dir==0)
+        { if ((dxr2+dyr2)%2==0)
+          { go(x0, y0, dxl, dyl, dxr2, dyr2, 1);
+            go(x0+dxr2, y0+dyr2, dxl, dyl, dxr-dxr2, dyr-dyr2, 0);
+          }
+          else
+          { go(x0, y0, dxl, dyl, dxr2, dyr2, 0);
+            go(x0+dxr2+dxl, y0+dyr2+dyl, dxr-dxr2, dyr-dyr2, -dxl, -dyl, -1);
+          }
+          return;
+        }
+      }
+    }
+    else //left side is odd
+    { if (dir==1)
+      { go(x0, y0, dxl, dyl, dxr2, dyr2, 1);
+        go(x0+dxr2, y0+dyr2, dxl, dyl, dxr-dxr2, dyr-dyr2, 1);
+        return;
+      }
+      if (dir==0)
+      { go(x0, y0, dxl, dyl, dxr2, dyr2, 1);
+        go(x0+dxr2, y0+dyr2, dxl, dyl, dxr-dxr2, dyr-dyr2, 0);
+        return;
+      }
+    }
+  }
+  //divide into 2x2 parts
+  if (dir!=0) //((dir==-1)||(dir==1))
+  { var dxl2=1+dxl>>1; //Math.round(dxl/2);
+    var dyl2=1+dyl>>1; //Math.round(dyl/2);
+    var dxr2=1+dxr>>1; //Math.round(dxr/2);
+    var dyr2=1+dyr>>1; //Math.round(dyr/2);  
+    if ((al%2==0)&&(ar%2==0)) //even-even
+    { if ((dxl2+dyl2+dxr2+dyr2)%2==0) //ee-ee or oo-oo
+      { if (dir==-1)
+        { go(x0, y0, dxl2, dyl2, dxr2, dyr2, 1);
+          go(x0+dxr2, y0+dyr2, dxl2, dyl2, dxr-dxr2, dyr-dyr2, -1);
+          go(x0+dxr2+dxl2, y0+dyr2+dyl2, dxl-dxl2, dyl-dyl2, dxr-dxr2, dyr-dyr2, -1);
+          go(x0+dxr2+dxl, y0+dyr2+dyl, dxl2-dxl, dyl2-dyl, -dxr2, -dyr2, 1);
+        }
+        else
+        { go(x0, y0, dxl2, dyl2, dxr2, dyr2, -1);
+          go(x0+dxl2, y0+dyl2, dxl-dxl2, dyl-dyl2, dxr2, dyr2, 1);
+          go(x0+dxr2+dxl2, y0+dyr2+dyl2, dxl-dxl2, dyl-dyl2, dxr-dxr2, dyr-dyr2, 1);
+          go(x0+dxr+dxl2, y0+dyr+dyl2, -dxl2, -dyl2, dxr2-dxr, dyr2-dyr, -1);
+        }
+      }
+      else //ee-oo or oo-ee
+      { if ((dxr2+dyr2)%2==0) //ee-oo
+        { if (dir==-1)
+          { go(x0, y0, dxl2, dyl2, dxr2, dyr2, 1);
+            go(x0+dxr2, y0+dyr2, dxl2, dyl2, dxr-dxr2, dyr-dyr2, 0);
+            go(x0+dxr+dxl2, y0+dyr+dyl2, dxr2-dxr, dyr2-dyr, dxl-dxl2, dyl-dyl2, 0);
+            go(x0+dxr2+dxl, y0+dyr2+dyl, dxl2-dxl, dyl2-dyl, -dxr2, -dyr2, 1);
+          }
+          else //ee-oo for dir=1 not possible, so transforming into e-1,e+1-oo = oo-oo 
+          { if (dxr2!=0) dxr2++; else dyr2++; 
+            go(x0, y0, dxl2, dyl2, dxr2, dyr2, -1);
+            go(x0+dxl2, y0+dyl2, dxl-dxl2, dyl-dyl2, dxr2, dyr2, 0);
+            go(x0+dxl+dxr2, y0+dyl+dyr2, dxr-dxr2, dyr-dyr2, dxl2-dxl, dyl2-dyl, 0);
+            go(x0+dxl2+dxr, y0+dyl2+dyr, -dxl2, -dyl2, dxr2-dxr, dyr2-dyr, -1);
+          }
+        }
+        else //oo-ee
+        { if (dir==1)
+          { go(x0, y0, dxl2, dyl2, dxr2, dyr2, -1);
+            go(x0+dxl2, y0+dyl2, dxl-dxl2, dyl-dyl2, dxr2, dyr2, 0);
+            go(x0+dxl+dxr2, y0+dyl+dyr2, dxr-dxr2, dyr-dyr2, dxl2-dxl, dyl2-dyl, 0);
+            go(x0+dxl2+dxr, y0+dyl2+dyr, -dxl2, -dyl2, dxr2-dxr, dyr2-dyr, -1);
+          }
+          else //oo-ee for dir=-1 not possible, so transforming into oo-e-1,e+1 = oo-oo 
+          { if (dxl2!=0) dxl2++; else dyl2++;
+            go(x0, y0, dxl2, dyl2, dxr2, dyr2, 1);
+            go(x0+dxr2, y0+dyr2, dxl2, dyl2, dxr-dxr2, dyr-dyr2, 0);
+            go(x0+dxr+dxl2, y0+dyr+dyl2, dxr2-dxr, dyr2-dyr, dxl-dxl2, dyl-dyl2, 0);
+            go(x0+dxr2+dxl, y0+dyr2+dyl, dxl2-dxl, dyl2-dyl, -dxr2, -dyr2, 1);
+          }
+        }
+      }
+    }
+    else //not even-even
+    { if ((al%2!=0)&&(ar%2!=0)) //odd-odd
+      { if (dxl2%2!=0) dxl2=dxl-dxl2; //get it in a shape eo-eo 
+        if (dyl2%2!=0) dyl2=dyl-dyl2;
+        if (dxr2%2!=0) dxr2=dxr-dxr2;
+        if (dyr2%2!=0) dyr2=dyr-dyr2;
+        if (dir==-1)
+        { go(x0, y0, dxl2, dyl2, dxr2, dyr2, 1);
+          go(x0+dxr2, y0+dyr2, dxl2, dyl2, dxr-dxr2, dyr-dyr2, 0);
+          go(x0+dxr+dxl2, y0+dyr+dyl2, dxr2-dxr, dyr2-dyr, dxl-dxl2, dyl-dyl2, 0);
+          go(x0+dxr2+dxl, y0+dyr2+dyl, dxl2-dxl, dyl2-dyl, -dxr2, -dyr2, 1);
+        }
+        else
+        { go(x0, y0, dxl2, dyl2, dxr2, dyr2, -1);
+          go(x0+dxl2, y0+dyl2, dxl-dxl2, dyl-dyl2, dxr2, dyr2, 0);
+          go(x0+dxl+dxr2, y0+dyl+dyr2, dxr-dxr2, dyr-dyr2, dxl2-dxl, dyl2-dyl, 0);
+          go(x0+dxl2+dxr, y0+dyl2+dyr, -dxl2, -dyl2, dxr2-dxr, dyr2-dyr, -1);
+        }
+      }
+      else //even-odd or odd-even
+      { if (al%2==0) //odd-even
+        { if (dir==-1)
+          { if (dxr2%2!=0) dxr2=dxr-dxr2; //get it in a shape eo-xx 
+            if (dyr2%2!=0) dyr2=dyr-dyr2;
+            if (al>2)
+            { go(x0, y0, dxl2, dyl2, dxr2, dyr2, 1);
+              go(x0+dxr2, y0+dyr2, dxl2, dyl2, dxr-dxr2, dyr-dyr2, -1);
+              go(x0+dxr2+dxl2, y0+dyr2+dyl2, dxl-dxl2, dyl-dyl2, dxr-dxr2, dyr-dyr2, -1);
+              go(x0+dxr2+dxl, y0+dyr2+dyl, dxl2-dxl, dyl2-dyl, -dxr2, -dyr2, 1);
+            }
+            else
+            { go(x0, y0, dxl2, dyl2, dxr2, dyr2, 1);
+              go(x0+dxr2, y0+dyr2, dxl2, dyl2, dxr-dxr2, dyr-dyr2, 0);
+              go(x0+dxr+dxl2, y0+dyr+dyl2, dxr2-dxr, dyr2-dyr, dxl-dxl2, dyl-dyl2, 0);
+              go(x0+dxr2+dxl, y0+dyr2+dyl, dxl2-dxl, dyl2-dyl, -dxr2, -dyr2, 1);
+            }
+          }
+          //else msg("4-part-error1: "+x0+", "+y0+", "+dxl+", "+dyl+", "+dxr+", "+dyr+", "+dir);
+        }
+        else //even-odd
+        { if (dir==1)
+          { if (dxl2%2!=0) dxl2=dxl-dxl2; //get it in a shape xx-eo 
+            if (dyl2%2!=0) dyl2=dyl-dyl2;
+            if (ar>2)
+            { go(x0, y0, dxl2, dyl2, dxr2, dyr2, -1);
+              go(x0+dxl2, y0+dyl2, dxl-dxl2, dyl-dyl2, dxr2, dyr2, 1);
+              go(x0+dxr2+dxl2, y0+dyr2+dyl2, dxl-dxl2, dyl-dyl2, dxr-dxr2, dyr-dyr2, 1);
+              go(x0+dxr+dxl2, y0+dyr+dyl2, -dxl2, -dyl2, dxr2-dxr, dyr2-dyr, -1);
+            }
+            else
+            { go(x0, y0, dxl2, dyl2, dxr2, dyr2, -1);
+              go(x0+dxl2, y0+dyl2, dxl-dxl2, dyl-dyl2, dxr2, dyr2, 0);
+              go(x0+dxl+dxr2, y0+dyl+dyr2, dxr-dxr2, dyr-dyr2, dxl2-dxl, dyl2-dyl, 0);
+              go(x0+dxl2+dxr, y0+dyl2+dyr, -dxl2, -dyl2, dxr2-dxr, dyr2-dyr, -1);
+            }
+          }
+          //else msg("4-part-error2: "+x0+", "+y0+", "+dxl+", "+dyl+", "+dxr+", "+dyr+", "+dir);        
+        }
+      }
+    }
+  } 
+  else //dir==0 -> divide into 3x3 parts
+  { //if ((al%2==0)&&(ar%2==0)) 
+    //  msg("9-part-error1: "+x0+", "+y0+", "+dxl+", "+dyl+", "+dxr+", "+dyr+", "+dir);        
+    if (ar%2==0) //even-odd: oeo-ooo
+    { var dxl2=((dxl>0)-(dxl<0)+dxl)/3|0; //Math.round(dxl/3);
+      var dyl2=((dyl>0)-(dyl<0)+dyl)/3|0; //Math.round(dyl/3);
+      var dxr2=((dxr>0)-(dxr<0)+dxr)/3|0; //Math.round(dxr/3);
+      var dyr2=((dyr>0)-(dyr<0)+dyr)/3|0; //Math.round(dyr/3);
+      if ((dxl2+dyl2)%2==0) //make it odd  
+      { dxl2=dxl-2*dxl2; 
+        dyl2=dyl-2*dyl2; 
+      } 
+      if ((dxr2+dyr2)%2==0) //make it odd (not necessary, however results are better for 12x30, 18x30 etc.) 
+      { if (abs(dxr2+dyr2)!=2) 
+        { if (dxr<0) dxr2++;
+          if (dxr>0) dxr2--;  //dont use else here !
+          if (dyr<0) dyr2++;
+          if (dyr>0) dyr2--;  //dont use else here !
+        }
+      }
+    }
+    else //odd-even: ooo-oeo
+    { var dxl2=((dxl>0)-(dxl<0)+dxl)/3|0; //Math.round(dxl/3);
+      var dyl2=((dyl>0)-(dyl<0)+dyl)/3|0; //Math.round(dyl/3);
+      var dxr2=((dxr>0)-(dxr<0)+dxr)/3|0; //Math.round(dxr/3);
+      var dyr2=((dyr>0)-(dyr<0)+dyr)/3|0; //Math.round(dyr/3);
+      if ((dxr2+dyr2)%2==0) //make it odd  
+      { dxr2=dxr-2*dxr2; 
+        dyr2=dyr-2*dyr2; 
+      } 
+      if ((dxl2+dyl2)%2==0) //make it odd (not necessary, however results are better for 12x30, 18x30 etc.)
+      { if (abs(dxl2+dyl2)!=2)
+        { if (dxl<0) dxl2++;
+          if (dxl>0) dxl2--;  //dont use else here !
+          if (dyl<0) dyl2++;
+          if (dyl>0) dyl2--;  //dont use else here !
+        }
+      }
+    }
+    if (al<ar)
+    { go(x0, y0, dxl2, dyl2, dxr2, dyr2, 0);
+      go(x0+dxl2+dxr2, y0+dyl2+dyr2, -dxr2, -dyr2, dxl-2*dxl2, dyl-2*dyl2, 0);
+      go(x0+dxl-dxl2, y0+dyl-dyl2, dxl2, dyl2, dxr2, dyr2, 0);
+      go(x0+dxl+dxr2, y0+dyl+dyr2, dxr-2*dxr2, dyr-2*dyr2, -dxl2, -dyl2, 0);
+      go(x0+dxr-dxr2+dxl-dxl2, y0+dyr-dyr2+dyl-dyl2, 2*dxl2-dxl, 2*dyl2-dyl, 2*dxr2-dxr, 2*dyr2-dyr, 0);
+      go(x0+dxl2+dxr2, y0+dyl2+dyr2, dxr-2*dxr2, dyr-2*dyr2, -dxl2, -dyl2, 0);
+      go(x0+dxr-dxr2, y0+dyr-dyr2, dxl2, dyl2, dxr2, dyr2, 0);
+      go(x0+dxr+dxl2, y0+dyr+dyl2, -dxr2, -dyr2, dxl-2*dxl2, dyl-2*dyl2, 0);
+      go(x0+dxr-dxr2+dxl-dxl2, y0+dyr-dyr2+dyl-dyl2, dxl2, dyl2, dxr2, dyr2, 0);
+    }
+    else
+    { go(x0, y0, dxl2, dyl2, dxr2, dyr2, 0);
+      go(x0+dxl2+dxr2, y0+dyl2+dyr2, dxr-2*dxr2, dyr-2*dyr2, -dxl2, -dyl2, 0);
+      go(x0+dxr-dxr2, y0+dyr-dyr2, dxl2, dyl2, dxr2, dyr2, 0);
+      go(x0+dxr+dxl2, y0+dyr+dyl2, -dxr2, -dyr2, dxl-2*dxl2, dyl-2*dyl2, 0);
+      go(x0+dxr-dxr2+dxl-dxl2, y0+dyr-dyr2+dyl-dyl2, 2*dxl2-dxl, 2*dyl2-dyl, 2*dxr2-dxr, 2*dyr2-dyr, 0);
+      go(x0+dxl2+dxr2, y0+dyl2+dyr2, -dxr2, -dyr2, dxl-2*dxl2, dyl-2*dyl2, 0);
+      go(x0+dxl-dxl2, y0+dyl-dyl2, dxl2, dyl2, dxr2, dyr2, 0);
+      go(x0+dxl+dxr2, y0+dyl+dyr2, dxr-2*dxr2, dyr-2*dyr2, -dxl2, -dyl2, 0);
+      go(x0+dxr-dxr2+dxl-dxl2, y0+dyr-dyr2+dyl-dyl2, dxl2, dyl2, dxr2, dyr2, 0);
+    }
+  }
+}
+function abs(nn)
+{ return((nn<0)?-nn:nn);
+}
+function render(x0, y0, dir)
+{ //msg("render: "+x0+","+y0);
+  //this function consumes currently about 90% of the total time
+  x_new=x0;
+  y_new=y0;
+  if (x_old>0)
+  { if (RB>0) ctx.fillStyle='hsl('+((Step++)*F|0)+',100%,50%)';
+    else
+    { if (dir==0) ctx.fillStyle=ctx.fillStyle=DLC;
+      else ctx.fillStyle=OLC;
+    }
+    if (x_new==x_old) 
+    { if (y_new>y_old) ctx.fillRect(SCvs*x_old-SLin, SCvs*y_old-SLin, SLin, SCvs+SLin);
+      else ctx.fillRect(SCvs*x_new-SLin, SCvs*y_new-SLin, SLin, SCvs+SLin);
+    }
+    else
+    { if (x_new>x_old) ctx.fillRect(SCvs*x_old-SLin, SCvs*y_old-SLin, SCvs+SLin, SLin);
+      else ctx.fillRect(SCvs*x_new-SLin, SCvs*y_new-SLin, SCvs+SLin, SLin);
+    }
+  }
+  x_old=x_new;
+  y_old=y_new;
+}
+//function msg(ss)
+//{ //alert(ss);  //use this for debugging
+//}
+
+var w=108, h=20, x_old, y_old, x_new, y_new, d=1;
+var SCvs=10, SLin=9, BGC='#ffffff',OLC='#0000ff',DLC='#ff0000';
+var B0=255,O0=0,O1=0,O2=255,D0=255,D1=0,D2=0;
+var cvs, ctx, isVis=0, Step, F, Fm=240, RB=0, Timeout, Delay=100, LT=1;
+
+function spacefill(ll,tt,ww,hh) //left, top, width, height
+{ if (hh>ww) //go top->down
+  { if ((hh%2==1)&&(ww%2==0)) go(ll, tt, ww, 0, 0, hh, 0); //go diagonal
+    else go(ll, tt, ww, 0, 0, hh, 1); //go top->down
+  }
+  else //go left->right
+  { if ((ww%2==1)&&(hh%2==0)) go(ll, tt, ww, 0, 0, hh, 0); //go diagonal
+    else go(ll, tt, ww, 0, 0, hh, -1); //go left->right
+  }
+}
+function Draw()
+{ clearTimeout(Timeout);
+  Timeout=setTimeout("DrawSpaceFillingCurve()",Delay);
+}
+function DrawSpaceFillingCurve()
+{ var ww=parseInt(el("w").value);
+  var hh=parseInt(el("h").value);
+  if ((ww>0)&&(ww<2050));
+  else { ww=100; el("w").value=ww;}
+  if ((hh>0)&&(hh<2050));
+  else { hh=100; el("h").value=hh;}
+  w=ww;
+  h=hh;
+  UpdLink();
+  cvs=el('cvs');
+  cvs.width=SCvs*w+SCvs-SLin;
+  cvs.height=SCvs*h+SCvs-SLin;
+  ctx=cvs.getContext("2d");
+  ctx.fillStyle = BGC;
+  ctx.fillRect(0,0,SCvs*w+SCvs-SLin,SCvs*h+SCvs-SLin);
+  ctx.stroke(); 
+  x_old=0; 
+  y_old=0;
+  Step=0;
+  F=Fm/(w*h);
+  var ss=new Date();  
+  spacefill(1, 1, w, h);
+  var ee=new Date();
+  el("et").innerHTML=(ee-ss)+" ms";  
+}
+function UpdLink()
+{ el('link').innerHTML="[<a target=_blank href='spacefillingcurve.html?w="+w+"&h="+h+"&d="+d+"&SCvs="+SCvs+"&SLin="+SLin+"&B0="+el("bgc0").value+"&O0="+el("olc0").value+"&O1="+el("olc1").value+"&O2="+el("olc2").value+"&D0="+el("dlc0").value+"&D1="+el("dlc1").value+"&D2="+el("dlc2").value+"&RB="+(RB*(Fm/120-1))+"&LT="+LT+"'>link</a>]";
+}
+function HideTools(bb)
+{ if(bb) LT=1;
+  else LT=0;
+  UpdLink();
+}
+function el(ii)
+{ return(document.getElementById(ii));
+}
+function EvalUrlString()
+{ var ii, jj, aa, uurl = window.location.search;
+  if (uurl != "")
+  { uurl = uurl.substring(1, uurl.length);
+    llist = uurl.split("&");
+    for (ii=0; ii<llist.length; ii++) eval(llist[ii]);
+    el("w").value=w;
+    el("h").value=h;
+    el("sp").value=d;
+    el("cs").value=SCvs;
+    el("CvsZ").innerHTML=" x "+SCvs;
+    el("ls").value=SLin;
+    el("LinZ").innerHTML=" x "+SLin;
+    el("bgc0").value=B0;
+    updBGC(B0);
+    el("dlc0").value=D0; el("dlc1").value=D1; el("dlc2").value=D2;
+    updDLC(0,D0); updDLC(1,D1); updDLC(2,D2);
+    el("olc0").value=O0; el("olc1").value=O1; el("olc2").value=O2;
+    updOLC(0,O0); updOLC(1,O1); updOLC(2,O2);
+    el("bgc_rgb").style.backgroundColor=BGC;
+    el("bgc_txt").innerHTML=BGC;
+    el("olc_rgb").style.backgroundColor=OLC;
+    el("olc_txt").innerHTML=OLC;
+    el("dlc_rgb").style.backgroundColor=DLC;
+    el("dlc_txt").innerHTML=DLC;
+    if(RB>0) { el("rb").checked=true; Fm=120+RB*120; }   
+  }
+  else ToggleStgs();
+  Draw();
+}
+function ToggleStgs()
+{ if (LT==0) return;
+  isVis=1-isVis;
+  if (isVis)
+  { el("Stgs").style.display='';
+    el("dc").className='w';
+  }
+  else
+  { el("Stgs").style.display='none';
+    el("dc").className='';
+  }  
+}
+function setSCvs(vv)
+{ SCvs=parseInt(vv);
+  el("CvsZ").innerHTML=" x "+SCvs;
+  if (SCvs<SLin) { setSLin(SCvs); el("ls").value=SLin; }
+  Draw();
+}
+function setSLin(vv)
+{ SLin=parseInt(vv);
+  if (SCvs<SLin) { SLin=SCvs; el("ls").value=SLin; }
+  el("LinZ").innerHTML=" x "+SLin;
+  Draw();
+}
+function updSplitpoint(ii)
+{ if (ii==0) d=0;
+  if (ii==1) d=1;
+  Draw();
+}
+function updBGC(vv)
+{ var hh="0123456789abcdef";
+  var ii,cc; nn=parseInt(vv);
+  cc=hh[nn>>4]+hh[nn%16];
+  BGC="#"+cc+cc+cc;
+  el("bgc_rgb").style.backgroundColor=BGC;
+  el("bgc_txt").innerHTML=BGC;
+  Draw();
+}
+function updOLC(jj,vv)
+{ var hh="0123456789abcdef";
+  var ii,cc=[]; nn=parseInt(vv);
+  for (ii=0; ii<3; ii++) cc[ii]=OLC.substr(1+2*ii,2);
+  cc[jj]=hh[nn>>4]+hh[nn%16];
+  OLC="#"+cc[0]+cc[1]+cc[2];
+  el("olc_rgb").style.backgroundColor=OLC;
+  el("olc_txt").innerHTML=OLC;
+  Draw();
+}
+function updDLC(jj,vv)
+{ var hh="0123456789abcdef";
+  var ii,cc=[]; nn=parseInt(vv);
+  for (ii=0; ii<3; ii++) cc[ii]=DLC.substr(1+2*ii,2);
+  cc[jj]=hh[nn>>4]+hh[nn%16];
+  DLC="#"+cc[0]+cc[1]+cc[2];
+  el("dlc_rgb").style.backgroundColor=DLC;
+  el("dlc_txt").innerHTML=DLC;
+  Draw();
+}
+function ChangeWidth(nn)
+{ w=parseInt(el("w").value);
+  w+=nn;
+  el("w").value=w;
+  Draw();
+}
+function ChangeHeight(nn)
+{ h=parseInt(el("h").value);
+  h+=nn;
+  el("h").value=h;
+  Draw();
+}
+function updDelay(vv)
+{ Delay=parseInt(vv);
+  el("delay").innerHTML=Delay+' ms';
+}
+function useRainbow(bb)
+{ RB=bb;
+  if (RB) Fm=600-Fm;
+  Draw();
+}
+</script>
+<style>
+body{margin:0px; font-family:Arial}
+.w {font-size:15px; background-color:#ffffff; border:0px; padding:4px 16px 4px 16px; margin:4px 0px 4px 0px;}
+.g {font-size:15px; background-color:#dddddd; border-top:1px solid #808080; border-bottom:1px solid #999999; padding:8px 20px 8px 20px; margin:4px 0px 4px 0px;}
+td, th {font-size:14px; text-align:left; vertical-align:middle;}
+th {font-size:16px; font-weight:bold}
+.col {width:24px;border:1px dashed #808080}
+.ctxt {font-family:Courier}
+input {font-size:15px; padding:0px; text-align:center; font-weight:bold}
+input.pm {width:30px}
+input.txt {width:60px}
+input.button {width:240px}
+.pt {font-size:9px; line-height:9px; border:1px solid #000000}
+.slider { -webkit-appearance: none; border-radius: 4px; background: #888; outline: none; opacity: 0.5; }
+.slider:hover {opacity: 1;}
+.slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 15px; height: 15px; border-radius: 50%; background: #888;cursor: pointer;}
+.slider::-moz-range-thumb {width: 15px;height: 15px;border-radius: 50%;background: #888;cursor: pointer;}
+a { font-family:Arial; font-size:18px; }
+a:link {color:#00f}
+a:visited {color:#00f}
+a:active {color:#00f}
+a:hover{color:#00f}
+</style>
+</head>
+<body onload="EvalUrlString()">
+<body>
+<table border=0 cellpadding=0 cellspacing=0>
+<tr>
+<td style="padding-left:24px">
+
+<div id="Stgs" style="display:none">
+
+<div class=g><table border=0 cellpadding=0 cellspacing=4 width=100%><tr><th>Draw a rectangular space-filling curve of arbitrary size</th>
+
+<td id="et" style='text-align:center'></td>
+<th style='text-align:right' id='link'>[<a target=_blank href='spacefillingcurve.html'>link</a>]</th>
+<td title="enable/disable canvas click">&#9757;<input type="checkbox" onclick=HideTools(this.checked) checked title="enable/disable canvas click"></td>
+</tr></table></div>
+
+<div class=w><table border=0 cellpadding=0 cellspacing=4>
+<tr>
+<th>diagonal direction:</th><th id="dlc_txt" class=ctxt>#ff0000</th><td id="dlc_rgb" class=col style="background-color:#ff0000">&nbsp;</td>
+<td style='width:20px'></td>
+<th>orthogonal direction:</th><th id="olc_txt" class=ctxt>#0000ff</th><td id="olc_rgb" class=col style="background-color:#0000ff">&nbsp;</td>
+<td style='width:20px'></td>
+<th>background:</th><th id="bgc_txt" class=ctxt>#ffffff</th><td id="bgc_rgb" class=col style="background-color:#ffffff">&nbsp;</td>
+</tr><tr>
+<td colspan=3 rowspan=2>
+<input id="dlc0" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updDLC(0,this.value);" step="1" min="0" max="255" value="255"><br>
+<input id="dlc1" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updDLC(1,this.value);" step="1" min="0" max="255" value="0"><br>
+<input id="dlc2" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updDLC(2,this.value);" step="1" min="0" max="255" value="0"></td>
+<td rowspan=2></td>
+<td colspan=3 rowspan=2>
+<input id="olc0" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updOLC(0,this.value);" step="1" min="0" max="255" value="0"><br>
+<input id="olc1" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updOLC(1,this.value);" step="1" min="0" max="255" value="0"><br>
+<input id="olc2" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updOLC(2,this.value);" step="1" min="0" max="255" value="255"></td>
+<td rowspan=2></td>
+<td colspan=3 style='vertical-align:top'>
+<input id="bgc0" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updBGC(this.value);" step="1" min="0" max="255" value="255"></td>
+</tr><tr>
+<th>delay: <input id="dl" class=slider style="width:92px;height:7px" type="range" oninput="updDelay(this.value);" value="100" step="1" min="10" max="250"></th>
+<td colpan=2 style='text-align:left' id="delay">100 ms</td>
+</tr></table></div>
+
+<div class=w><table border=0 cellpadding=0 cellspacing=4><tr>
+<th>canvas size:</th>
+<td valign=middle><input id="cs" class=slider style="width:90px;height:7px" type="range" onmouseover="this.title=this.value" oninput="setSCvs(this.value);" value="10" step="1" min="1" max="12"></td>
+<td style="width:12px">&nbsp;</td><th nowrap id="CvsZ">x 10</th>
+<td style="width:86px">&nbsp;</td>
+<th>line size:</th>
+<td valign=middle><input id="ls" class=slider style="width:90px;height:7px" type="range" onmouseover="this.title=this.value" oninput="setSLin(this.value);" value="9" step="1" min="1" max="12"></td>
+<td style="width:12px">&nbsp;</td><th nowrap id="LinZ">x 9</th>
+<td style="width:72px">&nbsp;</td>
+<th>divide at</th>
+<th valign=middle> &gt;3/2 <input id="sp" class=slider style="width:30px;height:7px" type="range" oninput="updSplitpoint(this.value);" value="1" step="1" min="0" max="1"> at &gt;=3/2</th>
+<td style='width:72px;text-align:right' nowrap title="use rainbow colors">&#127752;<input id='rb' type="checkbox" onclick=useRainbow(this.checked) title="use rainbow colors"></td>
+</tr></table></div>
+
+<div class=g><table border=0 cellpadding=0 cellspacing=4><tr>
+<th style="width:306px">width: <input class=txt id="w" value="108" size=4><input type=button class=pm value="+" onClick="ChangeWidth(1)"><input type=button class=pm value="-" onClick="ChangeWidth(-1)"></th>
+<th style="width:306px">height: <input class=txt id="h" value="20" size=4><input type=button class=pm value="+" onClick="ChangeHeight(1)"><input type=button class=pm value="-" onClick="ChangeHeight(-1)"></th>
+<th><input type="button" class=button value="draw space-filling curve" onClick="Draw()"></th>
+</tr></table></div>
+
+</div>
+</td>
+</tr></table>
+<div id="dc"><canvas onclick="ToggleStgs()" id="cvs" width="480" height="480" style="border:0px;cursor:pointer"></canvas></div>
+</div>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+</body>
+</html>
