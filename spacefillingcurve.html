@@ -447,7 +447,7 @@ function el(ii)
 { return(document.getElementById(ii));
 }
 function EvalUrlString()
-{ var ii, jj, aa, uurl = window.location.search;
+{ var ii, jj, aa, llist, uurl=window.location.search;
   if (uurl != "")
   { uurl = uurl.substring(1, uurl.length);
     llist = uurl.split("&");
@@ -505,18 +505,42 @@ function updSplitpoint(ii)
   if (ii==1) d=1;
   Draw();
 }
+function invBGC()
+{ var hh="0123456789abcdef";
+  var ii, cc, nn=255-parseInt(el("bgc0").value);
+  cc=hh[nn>>4]+hh[nn%16];
+  BGC="#"+cc+cc+cc;
+  el("bgc0").value=nn;
+  el("bgc_rgb").style.backgroundColor=BGC;
+  el("bgc_txt").innerHTML=BGC;
+  Draw();
+}
 function updBGC(vv)
 { var hh="0123456789abcdef";
-  var ii,cc; nn=parseInt(vv);
+  var ii, cc, nn=parseInt(vv);
   cc=hh[nn>>4]+hh[nn%16];
   BGC="#"+cc+cc+cc;
   el("bgc_rgb").style.backgroundColor=BGC;
   el("bgc_txt").innerHTML=BGC;
   Draw();
 }
+function invOLC()
+{ var hh="0123456789abcdef";
+  var ii, cc=[];
+  O0=255-parseInt(el("olc0").value);
+  O1=255-parseInt(el("olc1").value); 
+  O2=255-parseInt(el("olc2").value);   
+  el("olc0").value=O0; 
+  el("olc1").value=O1; 
+  el("olc2").value=O2;
+  OLC="#"+hh[O0>>4]+hh[O0%16]+hh[O1>>4]+hh[O1%16]+hh[O2>>4]+hh[O2%16];  
+  el("olc_rgb").style.backgroundColor=OLC;
+  el("olc_txt").innerHTML=OLC;
+  Draw();  
+}
 function updOLC(jj,vv)
 { var hh="0123456789abcdef";
-  var ii,cc=[]; nn=parseInt(vv);
+  var ii, cc=[], nn=parseInt(vv);
   for (ii=0; ii<3; ii++) cc[ii]=OLC.substr(1+2*ii,2);
   cc[jj]=hh[nn>>4]+hh[nn%16];
   OLC="#"+cc[0]+cc[1]+cc[2];
@@ -524,9 +548,23 @@ function updOLC(jj,vv)
   el("olc_txt").innerHTML=OLC;
   Draw();
 }
+function invDLC()
+{ var hh="0123456789abcdef";
+  var ii, cc=[];
+  D0=255-parseInt(el("dlc0").value);
+  D1=255-parseInt(el("dlc1").value); 
+  D2=255-parseInt(el("dlc2").value);   
+  el("dlc0").value=D0; 
+  el("dlc1").value=D1; 
+  el("dlc2").value=D2;
+  DLC="#"+hh[D0>>4]+hh[D0%16]+hh[D1>>4]+hh[D1%16]+hh[D2>>4]+hh[D2%16];  
+  el("dlc_rgb").style.backgroundColor=DLC;
+  el("dlc_txt").innerHTML=DLC;
+  Draw();  
+}
 function updDLC(jj,vv)
 { var hh="0123456789abcdef";
-  var ii,cc=[]; nn=parseInt(vv);
+  var ii, cc=[], nn=parseInt(vv);
   for (ii=0; ii<3; ii++) cc[ii]=DLC.substr(1+2*ii,2);
   cc[jj]=hh[nn>>4]+hh[nn%16];
   DLC="#"+cc[0]+cc[1]+cc[2];
@@ -592,7 +630,7 @@ body{margin:0px; font-family:Arial}
 .g {font-size:15px; background-color:#dddddd; border-top:1px solid #808080; border-bottom:1px solid #999999; padding:8px 20px 8px 20px; margin:4px 0px 4px 0px;}
 td, th {font-size:14px; text-align:left; vertical-align:middle;}
 th {font-size:16px; font-weight:bold}
-.col {width:24px;border:1px dashed #808080}
+.col {width:24px;border:1px dashed #808080;cursor:pointer}
 .ctxt {font-family:Courier}
 input {font-size:15px; padding:0px; text-align:center; font-weight:bold}
 input.pm {width:30px}
@@ -627,11 +665,11 @@ a:hover{color:#00f}
 
 <div class=w><table border=0 cellpadding=0 cellspacing=4>
 <tr>
-<th>diagonal direction:</th><th id="dlc_txt" class=ctxt>#ff0000</th><td id="dlc_rgb" class=col style="background-color:#ff0000">&nbsp;</td>
+<th>diagonal direction:</th><th id="dlc_txt" class=ctxt>#ff0000</th><td id="dlc_rgb" class=col title="invert color" onclick="invDLC()" style="background-color:#ff0000">&nbsp;</td>
 <td style='width:20px'></td>
-<th>orthogonal direction:</th><th id="olc_txt" class=ctxt>#0000ff</th><td id="olc_rgb" class=col style="background-color:#0000ff">&nbsp;</td>
+<th>orthogonal direction:</th><th id="olc_txt" class=ctxt>#0000ff</th><td id="olc_rgb" class=col title="invert color" onclick="invOLC()" style="background-color:#0000ff">&nbsp;</td>
 <td style='width:20px'></td>
-<th>background:</th><th id="bgc_txt" class=ctxt>#ffffff</th><td id="bgc_rgb" class=col style="background-color:#ffffff">&nbsp;</td>
+<th>background:</th><th id="bgc_txt" class=ctxt>#ffffff</th><td id="bgc_rgb" class=col title="invert color" onclick="invBGC()" style="background-color:#ffffff">&nbsp;</td>
 </tr><tr>
 <td colspan=3 rowspan=2>
 <input id="dlc0" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updDLC(0,this.value);" step="1" min="0" max="255" value="255"><br>
