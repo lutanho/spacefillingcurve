@@ -534,6 +534,20 @@ function updDLC(jj,vv)
   el("dlc_txt").innerHTML=DLC;
   Draw();
 }
+function FlipColors()
+{ var dd=OLC; oo=DLC;
+  O0=el("dlc0").value; O1=el("dlc1").value; O2=el("dlc2").value;
+  D0=el("olc0").value; D1=el("olc1").value; D2=el("olc2").value;   
+  el("dlc0").value=D0; el("dlc1").value=D1; el("dlc2").value=D2;
+  el("olc0").value=O0; el("olc1").value=O1; el("olc2").value=O2;
+  OLC=oo;
+  DLC=dd;
+  el("olc_rgb").style.backgroundColor=OLC;
+  el("olc_txt").innerHTML=OLC;
+  el("dlc_rgb").style.backgroundColor=DLC;
+  el("dlc_txt").innerHTML=DLC;
+  Draw();  
+}
 function ChangeWidth(nn)
 { w=parseInt(el("w").value);
   w+=nn;
@@ -623,7 +637,7 @@ a:hover{color:#00f}
 <input id="dlc0" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updDLC(0,this.value);" step="1" min="0" max="255" value="255"><br>
 <input id="dlc1" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updDLC(1,this.value);" step="1" min="0" max="255" value="0"><br>
 <input id="dlc2" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updDLC(2,this.value);" step="1" min="0" max="255" value="0"></td>
-<td rowspan=2></td>
+<td rowspan=2 title="<- flip colors ->" style="cursor:pointer" onclick="FlipColors()"></td>
 <td colspan=3 rowspan=2>
 <input id="olc0" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updOLC(0,this.value);" step="1" min="0" max="255" value="0"><br>
 <input id="olc1" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updOLC(1,this.value);" step="1" min="0" max="255" value="0"><br>
