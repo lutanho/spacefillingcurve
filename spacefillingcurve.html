@@ -401,9 +401,21 @@ function DrawSpaceFillingCurve()
 { var ww=parseInt(el("w").value);
   var hh=parseInt(el("h").value);
   if ((ww>0)&&(ww<2050));
-  else { ww=100; el("w").value=ww;}
+  else 
+  { if (ww<=0) ww=1;
+    if (ww>=2050) ww=2049;
+    if ((ww>0)&&(ww<2050));
+    else ww=100; 
+    el("w").value=ww;
+  }
   if ((hh>0)&&(hh<2050));
-  else { hh=100; el("h").value=hh;}
+  else 
+  { if (hh<=0) hh=1;
+    if (hh>=2050) hh=2049;
+    if ((hh>0)&&(hh<2050));
+    else hh=100; 
+    el("h").value=hh;
+  }
   w=ww;
   h=hh;
   UpdLink();
@@ -534,6 +546,22 @@ function ChangeHeight(nn)
   el("h").value=h;
   Draw();
 }
+function ChangeWidthHeight(nn)
+{ w=parseInt(el("w").value);
+  w+=nn;
+  el("w").value=w;
+  h=parseInt(el("h").value);
+  h+=nn;
+  el("h").value=h;
+  Draw();
+}
+function FlipWidthHeight()
+{ w=parseInt(el("h").value);
+  h=parseInt(el("w").value);
+  el("w").value=w;
+  el("h").value=h;
+  Draw();
+}
 function updDelay(vv)
 { Delay=parseInt(vv);
   el("delay").innerHTML=Delay+' ms';
@@ -555,7 +583,7 @@ th {font-size:16px; font-weight:bold}
 input {font-size:15px; padding:0px; text-align:center; font-weight:bold}
 input.pm {width:30px}
 input.txt {width:60px}
-input.button {width:240px}
+input.button {width:192px}
 .pt {font-size:9px; line-height:9px; border:1px solid #000000}
 .slider { -webkit-appearance: none; border-radius: 4px; background: #888; outline: none; opacity: 0.5; }
 .slider:hover {opacity: 1;}
@@ -623,9 +651,9 @@ a:hover{color:#00f}
 </tr></table></div>
 
 <div class=g><table border=0 cellpadding=0 cellspacing=4><tr>
-<th style="width:306px">width: <input class=txt id="w" value="108" size=4><input type=button class=pm value="+" onClick="ChangeWidth(1)"><input type=button class=pm value="-" onClick="ChangeWidth(-1)"></th>
-<th style="width:306px">height: <input class=txt id="h" value="20" size=4><input type=button class=pm value="+" onClick="ChangeHeight(1)"><input type=button class=pm value="-" onClick="ChangeHeight(-1)"></th>
-<th><input type="button" class=button value="draw space-filling curve" onClick="Draw()"></th>
+<th style="width:306px">width: <input class=txt id="w" value="108" size=4><input type=button class=pm value="+" onClick="ChangeWidth(1)"><input type=button class=pm value="-" onClick="ChangeWidth(-1)"><input type=button class=pm value="+4" onClick="ChangeWidth(4)"><input type=button class=pm value="-4" onClick="ChangeWidth(-4)"></th>
+<th style="width:306px">height: <input class=txt id="h" value="20" size=4><input type=button class=pm value="+" onClick="ChangeHeight(1)"><input type=button class=pm value="-" onClick="ChangeHeight(-1)"><input type=button class=pm value="+4" onClick="ChangeHeight(4)"><input type=button class=pm value="-4" onClick="ChangeHeight(-4)"></th>
+<th><input type="button" class=button value="draw space-filling curve" onClick="Draw()"><input type=button class=pm value="<>" onClick="FlipWidthHeight()"><input type=button class=pm value="++" onClick="ChangeWidthHeight(1)"><input type=button class=pm value="--" onClick="ChangeWidthHeight(-1)"></th>
 </tr></table></div>
 
 </div>
