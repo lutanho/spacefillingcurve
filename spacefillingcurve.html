@@ -17,8 +17,9 @@ function go(x0, y0, dxl, dyl, dxr, dyr, dir)
   //dir: direction to go - -1=left, 0=middle, 1=right
   //msg("go: "+x0+", "+y0+", "+dxl+", "+dyl+", "+dxr+", "+dyr+", "+dir);
   //render if 2x3 or smaller
-  var al=abs(dxl+dyl), ar=abs(dxr+dyr);
-  if (al*ar<=6)
+  var al=abs(dxl+dyl), ar=abs(dxr+dyr), m=6;
+  if (RB==1) m=2;
+  if (al*ar<=m)
   { var ddx, ddy, ii;
     if (al==1)
     { ddx=(dxr<0)?-1:((dxr>0)?1:0); //dxr/ar;
@@ -356,11 +357,20 @@ function render(x0, y0, dir)
   //this function consumes currently about 90% of the total time
   x_new=x0;
   y_new=y0;
+  //dM=1-((x_new-x_old)*(x_old-x_old2)+(y_new-y_old)*(y_old-y_old2));  
+  dM=((x_new-x_old)*(x_old-x_old2)+(y_new-y_old)*(y_old-y_old2))?1000:707;
+  M+=dM;
   if (x_old>0)
-  { if (RB>0) ctx.fillStyle='hsl('+((Step++)*F|0)+',100%,50%)';
+  { if (RB>=3) ctx.fillStyle='hsl('+((Step++)*F|0)+',100%,50%)';
     else
-    { if (dir==0) ctx.fillStyle=ctx.fillStyle=DLC;
-      else ctx.fillStyle=OLC;
+    { if (RB==2)
+      { if (dM==1000) ctx.fillStyle=ctx.fillStyle=OLC;
+        else ctx.fillStyle=DLC;
+      }
+      else
+      { if (dir==0) ctx.fillStyle=ctx.fillStyle=DLC;
+        else ctx.fillStyle=OLC;
+      }      
     }
     if (x_new==x_old) 
     { if (y_new>y_old) ctx.fillRect(SCvs*x_old-SLin, SCvs*y_old-SLin, SLin, SCvs+SLin);
@@ -370,7 +380,9 @@ function render(x0, y0, dir)
     { if (x_new>x_old) ctx.fillRect(SCvs*x_old-SLin, SCvs*y_old-SLin, SCvs+SLin, SLin);
       else ctx.fillRect(SCvs*x_new-SLin, SCvs*y_new-SLin, SCvs+SLin, SLin);
     }
-  }
+  }  
+  x_old2=x_old;
+  y_old2=y_old;
   x_old=x_new;
   y_old=y_new;
 }
@@ -378,7 +390,7 @@ function render(x0, y0, dir)
 //{ //alert(ss);  //use this for debugging
 //}
 
-var w=108, h=20, x_old, y_old, x_new, y_new, d=1;
+var w=108, h=20, x_old, y_old, x_old2, y_old2, x_new, y_new, d=1, M, dM;
 var SCvs=10, SLin=9, BGC='#ffffff',OLC='#0000ff',DLC='#ff0000';
 var B0=255,O0=0,O1=0,O2=255,D0=255,D1=0,D2=0;
 var cvs, ctx, isVis=0, Step, F, Fm=240, RB=0, Timeout, Delay=100, LT=1;
@@ -428,15 +440,19 @@ function DrawSpaceFillingCurve()
   ctx.stroke(); 
   x_old=0; 
   y_old=0;
+  x_old2=0; 
+  y_old2=0;
+  M=0;
   Step=0;
   F=Fm/(w*h);
   var ss=new Date();  
   spacefill(1, 1, w, h);
   var ee=new Date();
-  el("et").innerHTML=(ee-ss)+" ms";  
+  //el("et").innerHTML=Math.round(100*M/(w*h))+"%&nbsp;&nbsp;&nbsp;"+(ee-ss)+" ms";
+  el("et").innerHTML=Math.round(M/(10*w*h))+"%&nbsp;&nbsp;&nbsp;"+(ee-ss)+" ms";     
 }
 function UpdLink()
-{ el('link').innerHTML="[<a target=_blank href='spacefillingcurve.html?w="+w+"&h="+h+"&d="+d+"&SCvs="+SCvs+"&SLin="+SLin+"&B0="+el("bgc0").value+"&O0="+el("olc0").value+"&O1="+el("olc1").value+"&O2="+el("olc2").value+"&D0="+el("dlc0").value+"&D1="+el("dlc1").value+"&D2="+el("dlc2").value+"&RB="+(RB*(Fm/120-1))+"&LT="+LT+"'>link</a>]";
+{ el('link').innerHTML="[<a target=_blank href='spacefillingcurve.html?w="+w+"&h="+h+"&d="+d+"&SCvs="+SCvs+"&SLin="+SLin+"&B0="+el("bgc0").value+"&O0="+el("olc0").value+"&O1="+el("olc1").value+"&O2="+el("olc2").value+"&D0="+el("dlc0").value+"&D1="+el("dlc1").value+"&D2="+el("dlc2").value+"&RB="+RB+"&LT="+LT+"'>link</a>]";
 }
 function HideTools(bb)
 { if(bb) LT=1;
@@ -471,7 +487,7 @@ function EvalUrlString()
     el("olc_txt").innerHTML=OLC;
     el("dlc_rgb").style.backgroundColor=DLC;
     el("dlc_txt").innerHTML=DLC;
-    if(RB>0) { el("rb").checked=true; Fm=120+RB*120; }   
+    if(RB>0) { el("rb").selectedIndex=RB; Fm=120*(RB-1); } 
   }
   else ToggleStgs();
   Draw();
@@ -491,13 +507,13 @@ function ToggleStgs()
 function setSCvs(vv)
 { SCvs=parseInt(vv);
   el("CvsZ").innerHTML=" x "+SCvs;
-  if (SCvs<SLin) { setSLin(SCvs); el("ls").value=SLin; }
+  if (SCvs<SLin) { SLin=SCvs; el("ls").value=SLin; el("LinZ").innerHTML=" x "+SLin; }
   Draw();
 }
 function setSLin(vv)
 { SLin=parseInt(vv);
-  if (SCvs<SLin) { SLin=SCvs; el("ls").value=SLin; }
   el("LinZ").innerHTML=" x "+SLin;
+  if (SCvs<SLin) { SCvs=SLin; el("cs").value=SCvs; el("CvsZ").innerHTML=" x "+SCvs; } 
   Draw();
 }
 function updSplitpoint(ii)
@@ -620,7 +636,7 @@ function updDelay(vv)
 }
 function useRainbow(bb)
 { RB=bb;
-  if (RB) Fm=600-Fm;
+  Fm=120*(RB-1);
   Draw();
 }
 </script>
@@ -663,19 +679,19 @@ a:hover{color:#00f}
 <td title="enable/disable canvas click">&#9757;<input type="checkbox" onclick=HideTools(this.checked) checked title="enable/disable canvas click"></td>
 </tr></table></div>
 
-<div class=w><table border=0 cellpadding=0 cellspacing=4>
+<div class=w><table border=0 cellpadding=0 cellspacing=6>
 <tr>
-<th>diagonal direction:</th><th id="dlc_txt" class=ctxt>#ff0000</th><td id="dlc_rgb" class=col title="invert color" onclick="invDLC()" style="background-color:#ff0000">&nbsp;</td>
+<th>diagonal direction:</th><td id="dlc_rgb" class=col title="invert color" onclick="invDLC()" style="background-color:#ff0000">&nbsp;</td><th id="dlc_txt" class=ctxt>#ff0000</th>
 <td style='width:20px'></td>
-<th>orthogonal direction:</th><th id="olc_txt" class=ctxt>#0000ff</th><td id="olc_rgb" class=col title="invert color" onclick="invOLC()" style="background-color:#0000ff">&nbsp;</td>
+<th>orthogonal direction:</th><td id="olc_rgb" class=col title="invert color" onclick="invOLC()" style="background-color:#0000ff">&nbsp;</td><th id="olc_txt" class=ctxt>#0000ff</th>
 <td style='width:20px'></td>
-<th>background:</th><th id="bgc_txt" class=ctxt>#ffffff</th><td id="bgc_rgb" class=col title="invert color" onclick="invBGC()" style="background-color:#ffffff">&nbsp;</td>
+<th>background:</th><td id="bgc_rgb" class=col title="invert color" onclick="invBGC()" style="background-color:#ffffff">&nbsp;</td><th id="bgc_txt" class=ctxt>#ffffff</th>
 </tr><tr>
 <td colspan=3 rowspan=2>
 <input id="dlc0" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updDLC(0,this.value);" step="1" min="0" max="255" value="255"><br>
 <input id="dlc1" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updDLC(1,this.value);" step="1" min="0" max="255" value="0"><br>
 <input id="dlc2" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updDLC(2,this.value);" step="1" min="0" max="255" value="0"></td>
-<td rowspan=2 title="<- flip colors ->" style="cursor:pointer" onclick="FlipColors()"></td>
+<th rowspan=2 title="<- flip colors ->" style="color:#808080;cursor:pointer" onclick="FlipColors()">&#129154;<br>&#129152;</th>
 <td colspan=3 rowspan=2>
 <input id="olc0" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updOLC(0,this.value);" step="1" min="0" max="255" value="0"><br>
 <input id="olc1" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updOLC(1,this.value);" step="1" min="0" max="255" value="0"><br>
@@ -685,21 +701,18 @@ a:hover{color:#00f}
 <input id="bgc0" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updBGC(this.value);" step="1" min="0" max="255" value="255"></td>
 </tr><tr>
 <th>delay: <input id="dl" class=slider style="width:92px;height:7px" type="range" oninput="updDelay(this.value);" value="100" step="1" min="10" max="250"></th>
-<td colpan=2 style='text-align:left' id="delay">100 ms</td>
-</tr></table></div>
-
-<div class=w><table border=0 cellpadding=0 cellspacing=4><tr>
-<th>canvas size:</th>
-<td valign=middle><input id="cs" class=slider style="width:90px;height:7px" type="range" onmouseover="this.title=this.value" oninput="setSCvs(this.value);" value="10" step="1" min="1" max="12"></td>
-<td style="width:12px">&nbsp;</td><th nowrap id="CvsZ">x 10</th>
-<td style="width:86px">&nbsp;</td>
-<th>line size:</th>
-<td valign=middle><input id="ls" class=slider style="width:90px;height:7px" type="range" onmouseover="this.title=this.value" oninput="setSLin(this.value);" value="9" step="1" min="1" max="12"></td>
-<td style="width:12px">&nbsp;</td><th nowrap id="LinZ">x 9</th>
-<td style="width:72px">&nbsp;</td>
-<th>divide at</th>
-<th valign=middle> &gt;3/2 <input id="sp" class=slider style="width:30px;height:7px" type="range" oninput="updSplitpoint(this.value);" value="1" step="1" min="0" max="1"> at &gt;=3/2</th>
-<td style='width:72px;text-align:right' nowrap title="use rainbow colors">&#127752;<input id='rb' type="checkbox" onclick=useRainbow(this.checked) title="use rainbow colors"></td>
+<td style='text-align:center;font-size:13px;line-height:10px' id="delay">100 ms</td>
+<td rowspan=3 style='text-align:right;vertical-align:bottom'><select size=3 id='rb' onchange=useRainbow(this.selectedIndex)><option>&#129517;</option><option>&#128162;</option><option>&#128207;</option><option>&#129412;</option><option>&#127752;</option></select></td>
+</tr>
+<tr><th colspan=10>&nbsp;</th></tr>
+<tr>
+<th colspan=2>canvas size: <input id="cs" class=slider style="width:90px;height:7px" type="range" onmouseover="this.title=this.value" oninput="setSCvs(this.value);" value="10" step="1" min="1" max="12"></th>
+<th nowrap id="CvsZ"> x 10</th>
+<td>&nbsp;</td>
+<th colspan=2>line size: <input id="ls" class=slider style="width:90px;height:7px" type="range" onmouseover="this.title=this.value" oninput="setSLin(this.value);" value="9" step="1" min="1" max="12"></th>
+<th nowrap id="LinZ"> x 9</th>
+<td>&nbsp;</td>
+<th colspan=2 valign=middle>divide at &gt;3/2 <input id="sp" class=slider style="width:30px;height:7px" type="range" oninput="updSplitpoint(this.value);" value="1" step="1" min="0" max="1"> at &ge;3/2</th>
 </tr></table></div>
 
 <div class=g><table border=0 cellpadding=0 cellspacing=4><tr>
