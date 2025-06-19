@@ -391,8 +391,8 @@ function render(x0, y0, dir)
 //}
 
 var w=108, h=20, x_old, y_old, x_old2, y_old2, x_new, y_new, d=1, M, dM;
-var SCvs=10, SLin=9, BGC='#ffffff',OLC='#0000ff',DLC='#ff0000';
-var B0=255,O0=0,O1=0,O2=255,D0=255,D1=0,D2=0;
+var SCvs=9, SLin=8, BGC='#000000',OLC='#ff9900',DLC='#0066ff';
+var B0=0,O0=255,O1=153,O2=0,D0=0,D1=102,D2=255, MaxSize=2049;
 var cvs, ctx, isVis=0, Step, F, Fm=240, RB=0, Timeout, Delay=100, LT=1;
 
 function spacefill(ll,tt,ww,hh) //left, top, width, height
@@ -412,19 +412,19 @@ function Draw()
 function DrawSpaceFillingCurve()
 { var ww=parseInt(el("w").value);
   var hh=parseInt(el("h").value);
-  if ((ww>0)&&(ww<2050));
+  if ((ww>0)&&(ww<=MaxSize));
   else 
   { if (ww<=0) ww=1;
-    if (ww>=2050) ww=2049;
-    if ((ww>0)&&(ww<2050));
+    if (ww>MaxSize) ww=MaxSize;
+    if ((ww>0)&&(ww<=MaxSize));
     else ww=100; 
     el("w").value=ww;
   }
-  if ((hh>0)&&(hh<2050));
+  if ((hh>0)&&(hh<=MaxSize));
   else 
   { if (hh<=0) hh=1;
-    if (hh>=2050) hh=2049;
-    if ((hh>0)&&(hh<2050));
+    if (hh>MaxSize) hh=MaxSize;
+    if ((hh>0)&&(hh<=MaxSize));
     else hh=100; 
     el("h").value=hh;
   }
@@ -467,14 +467,14 @@ function EvalUrlString()
   if (uurl != "")
   { uurl = uurl.substring(1, uurl.length);
     llist = uurl.split("&");
-    for (ii=0; ii<llist.length; ii++) eval(llist[ii]);
+    for (ii=0; ii<llist.length; ii++) { if (window[llist[ii].split("=")[0]]) eval(llist[ii]); }
     el("w").value=w;
     el("h").value=h;
     el("sp").value=d;
     el("cs").value=SCvs;
-    el("CvsZ").innerHTML=" x "+SCvs;
+    el("CvsZ").innerHTML="x "+SCvs;
     el("ls").value=SLin;
-    el("LinZ").innerHTML=" x "+SLin;
+    el("LinZ").innerHTML="x "+SLin;
     el("bgc0").value=B0;
     updBGC(B0);
     el("dlc0").value=D0; el("dlc1").value=D1; el("dlc2").value=D2;
@@ -506,14 +506,30 @@ function ToggleStgs()
 }
 function setSCvs(vv)
 { SCvs=parseInt(vv);
-  el("CvsZ").innerHTML=" x "+SCvs;
-  if (SCvs<SLin) { SLin=SCvs; el("ls").value=SLin; el("LinZ").innerHTML=" x "+SLin; }
+  el("CvsZ").innerHTML="x "+SCvs;
+  if (SCvs<SLin) { SLin=SCvs; el("ls").value=SLin; el("LinZ").innerHTML="x "+SLin; }
+  Draw();
+}
+function ChangeSCvs(dd)
+{ if ((SCvs+dd>=1)&&(SCvs+dd<=12)) SCvs+=dd;
+  else return;
+  el("cs").value=SCvs;
+  el("CvsZ").innerHTML="x "+SCvs;
+  if (SCvs<SLin) { SLin=SCvs; el("ls").value=SLin; el("LinZ").innerHTML="x "+SLin; }
   Draw();
 }
 function setSLin(vv)
 { SLin=parseInt(vv);
-  el("LinZ").innerHTML=" x "+SLin;
-  if (SCvs<SLin) { SCvs=SLin; el("cs").value=SCvs; el("CvsZ").innerHTML=" x "+SCvs; } 
+  el("LinZ").innerHTML="x "+SLin;
+  if (SCvs<SLin) { SCvs=SLin; el("cs").value=SCvs; el("CvsZ").innerHTML="x "+SCvs; } 
+  Draw();
+}
+function ChangeSLin(dd)
+{ if ((SLin+dd>=1)&&(SLin+dd<=12)) SLin+=dd;
+  else return;
+  el("ls").value=SLin;
+  el("LinZ").innerHTML="x "+SLin;
+  if (SCvs<SLin) { SCvs=SLin; el("cs").value=SCvs; el("CvsZ").innerHTML="x "+SCvs; } 
   Draw();
 }
 function updSplitpoint(ii)
@@ -604,22 +620,31 @@ function FlipColors()
 }
 function ChangeWidth(nn)
 { w=parseInt(el("w").value);
-  w+=nn;
+  if ((w+nn<=MaxSize)&&(w+nn>0)) w+=nn;
   el("w").value=w;
   Draw();
 }
 function ChangeHeight(nn)
 { h=parseInt(el("h").value);
-  h+=nn;
+  if ((h+nn<=MaxSize)&&(h+nn>0)) h+=nn;
   el("h").value=h;
   Draw();
 }
 function ChangeWidthHeight(nn)
-{ w=parseInt(el("w").value);
-  w+=nn;
-  el("w").value=w;
+{ var ddw=parseInt(el("dw").value);
+  if ((ddw>=-9)&&(ddw<=99));
+  else { ddw=0; el("dw").value=ddw; }
+  var ddh=parseInt(el("dh").value);
+  if ((ddh>=-9)&&(ddh<=99));
+  else { ddh=0; el("dh").value=ddh; }
+  w=parseInt(el("w").value);
   h=parseInt(el("h").value);
-  h+=nn;
+  if ((w+nn*ddw<=MaxSize)&&(w+nn*ddw>0)&&
+      (h+nn*ddh<=MaxSize)&&(h+nn*ddh>0))
+  { w+=nn*ddw;
+    h+=nn*ddh;
+  }
+  el("w").value=w; 
   el("h").value=h;
   Draw();
 }
@@ -646,12 +671,13 @@ body{margin:0px; font-family:Arial}
 .g {font-size:15px; background-color:#dddddd; border-top:1px solid #808080; border-bottom:1px solid #999999; padding:8px 20px 8px 20px; margin:4px 0px 4px 0px;}
 td, th {font-size:14px; text-align:left; vertical-align:middle;}
 th {font-size:16px; font-weight:bold}
-.col {width:24px;border:1px dashed #808080;cursor:pointer}
+.col {width:30px;border:1px dashed #808080;cursor:pointer}
 .ctxt {font-family:Courier}
 input {font-size:15px; padding:0px; text-align:center; font-weight:bold}
 input.pm {width:30px}
 input.txt {width:60px}
-input.button {width:192px}
+input.txt1 {width:24px}
+input.button {width:120px}
 .pt {font-size:9px; line-height:9px; border:1px solid #000000}
 .slider { -webkit-appearance: none; border-radius: 4px; background: #888; outline: none; opacity: 0.5; }
 .slider:hover {opacity: 1;}
@@ -675,30 +701,32 @@ a:hover{color:#00f}
 <div class=g><table border=0 cellpadding=0 cellspacing=4 width=100%><tr><th>Draw a rectangular space-filling curve of arbitrary size</th>
 
 <td id="et" style='text-align:center'></td>
-<th style='text-align:right' id='link'>[<a target=_blank href='spacefillingcurve.html'>link</a>]</th>
+<th style='text-align:right' id='link' title='direct link to this page with current settings in the url parameters'>[<a target=_blank href='spacefillingcurve.html'>link</a>]</th>
 <td title="enable/disable canvas click">&#9757;<input type="checkbox" onclick=HideTools(this.checked) checked title="enable/disable canvas click"></td>
+<td></td>
+<td><a href='https://photos.app.goo.gl/NtZm4yfvq463avgi6' target=_blank title='album with 50 sample pics created with this page (7 MB)'>&#128444;&#65039;</a><td>
 </tr></table></div>
 
 <div class=w><table border=0 cellpadding=0 cellspacing=6>
 <tr>
-<th>diagonal direction:</th><td id="dlc_rgb" class=col title="invert color" onclick="invDLC()" style="background-color:#ff0000">&nbsp;</td><th id="dlc_txt" class=ctxt>#ff0000</th>
+<th>diagonal direction:</th><td id="dlc_rgb" class=col title="invert color" onclick="invDLC()" style="background-color:#0066ff">&nbsp;</td><th id="dlc_txt" class=ctxt>#0066ff</th>
 <td style='width:20px'></td>
-<th>orthogonal direction:</th><td id="olc_rgb" class=col title="invert color" onclick="invOLC()" style="background-color:#0000ff">&nbsp;</td><th id="olc_txt" class=ctxt>#0000ff</th>
+<th>orthogonal direction:</th><td id="olc_rgb" class=col title="invert color" onclick="invOLC()" style="background-color:#ff9900">&nbsp;</td><th id="olc_txt" class=ctxt>#ff9900</th>
 <td style='width:20px'></td>
-<th>background:</th><td id="bgc_rgb" class=col title="invert color" onclick="invBGC()" style="background-color:#ffffff">&nbsp;</td><th id="bgc_txt" class=ctxt>#ffffff</th>
+<th>background:</th><td id="bgc_rgb" class=col title="invert color" onclick="invBGC()" style="background-color:#000000">&nbsp;</td><th id="bgc_txt" class=ctxt>#000000</th>
 </tr><tr>
 <td colspan=3 rowspan=2>
-<input id="dlc0" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updDLC(0,this.value);" step="1" min="0" max="255" value="255"><br>
-<input id="dlc1" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updDLC(1,this.value);" step="1" min="0" max="255" value="0"><br>
-<input id="dlc2" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updDLC(2,this.value);" step="1" min="0" max="255" value="0"></td>
+<input id="dlc0" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updDLC(0,this.value);" step="1" min="0" max="255" value="0"><br>
+<input id="dlc1" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updDLC(1,this.value);" step="1" min="0" max="255" value="102"><br>
+<input id="dlc2" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updDLC(2,this.value);" step="1" min="0" max="255" value="255"></td>
 <th rowspan=2 title="<- flip colors ->" style="color:#808080;cursor:pointer" onclick="FlipColors()">&#129154;<br>&#129152;</th>
 <td colspan=3 rowspan=2>
-<input id="olc0" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updOLC(0,this.value);" step="1" min="0" max="255" value="0"><br>
-<input id="olc1" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updOLC(1,this.value);" step="1" min="0" max="255" value="0"><br>
-<input id="olc2" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updOLC(2,this.value);" step="1" min="0" max="255" value="255"></td>
+<input id="olc0" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updOLC(0,this.value);" step="1" min="0" max="255" value="255"><br>
+<input id="olc1" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updOLC(1,this.value);" step="1" min="0" max="255" value="153"><br>
+<input id="olc2" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updOLC(2,this.value);" step="1" min="0" max="255" value="0"></td>
 <td rowspan=2></td>
 <td colspan=3 style='vertical-align:top'>
-<input id="bgc0" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updBGC(this.value);" step="1" min="0" max="255" value="255"></td>
+<input id="bgc0" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updBGC(this.value);" step="1" min="0" max="255" value="0"></td>
 </tr><tr>
 <th>delay: <input id="dl" class=slider style="width:92px;height:7px" type="range" oninput="updDelay(this.value);" value="100" step="1" min="10" max="250"></th>
 <td style='text-align:center;font-size:13px;line-height:10px' id="delay">100 ms</td>
@@ -706,11 +734,13 @@ a:hover{color:#00f}
 </tr>
 <tr><th colspan=10>&nbsp;</th></tr>
 <tr>
-<th colspan=2>canvas size: <input id="cs" class=slider style="width:90px;height:7px" type="range" onmouseover="this.title=this.value" oninput="setSCvs(this.value);" value="10" step="1" min="1" max="12"></th>
-<th nowrap id="CvsZ"> x 10</th>
+<th colspan>line: <input id="ls" class=slider style="width:90px;height:7px" type="range" onmouseover="this.title=this.value" oninput="setSLin(this.value);" value="8" step="1" min="1" max="12"></th>
+<th nowrap id="LinZ">x 8</th>
+<td style='text-align:center'><input type=button class=pm value="+" onClick="ChangeSLin(1)"><input type=button class=pm value="-" onClick="ChangeSLin(-1)"></td>
 <td>&nbsp;</td>
-<th colspan=2>line size: <input id="ls" class=slider style="width:90px;height:7px" type="range" onmouseover="this.title=this.value" oninput="setSLin(this.value);" value="9" step="1" min="1" max="12"></th>
-<th nowrap id="LinZ"> x 9</th>
+<th colspan>canvas: <input id="cs" class=slider style="width:90px;height:7px" type="range" onmouseover="this.title=this.value" oninput="setSCvs(this.value);" value="9" step="1" min="1" max="12"></th>
+<th nowrap id="CvsZ">x 9</th>
+<td style='text-align:center'><input type=button class=pm value="+" onClick="ChangeSCvs(1)"><input type=button class=pm value="-" onClick="ChangeSCvs(-1)"></td>
 <td>&nbsp;</td>
 <th colspan=2 valign=middle>divide at &gt;3/2 <input id="sp" class=slider style="width:30px;height:7px" type="range" oninput="updSplitpoint(this.value);" value="1" step="1" min="0" max="1"> at &ge;3/2</th>
 </tr></table></div>
@@ -718,7 +748,9 @@ a:hover{color:#00f}
 <div class=g><table border=0 cellpadding=0 cellspacing=4><tr>
 <th style="width:306px">width: <input class=txt id="w" value="108" size=4><input type=button class=pm value="+" onClick="ChangeWidth(1)"><input type=button class=pm value="-" onClick="ChangeWidth(-1)"><input type=button class=pm value="+4" onClick="ChangeWidth(4)"><input type=button class=pm value="-4" onClick="ChangeWidth(-4)"></th>
 <th style="width:306px">height: <input class=txt id="h" value="20" size=4><input type=button class=pm value="+" onClick="ChangeHeight(1)"><input type=button class=pm value="-" onClick="ChangeHeight(-1)"><input type=button class=pm value="+4" onClick="ChangeHeight(4)"><input type=button class=pm value="-4" onClick="ChangeHeight(-4)"></th>
-<th><input type="button" class=button value="draw space-filling curve" onClick="Draw()"><input type=button class=pm value="<>" onClick="FlipWidthHeight()"><input type=button class=pm value="++" onClick="ChangeWidthHeight(1)"><input type=button class=pm value="--" onClick="ChangeWidthHeight(-1)"></th>
+<th><input type="button" class=button value="draw curve" onClick="Draw()">
+<input type=button class=pm value="<>" onClick="FlipWidthHeight()">
+<input class=txt1 id="dw" value="1" size=2><input class=txt1 id="dh" value="1" size=2><input type=button class=pm value="++" onClick="ChangeWidthHeight(1)"><input type=button class=pm value="--" onClick="ChangeWidthHeight(-1)"></th>
 </tr></table></div>
 
 </div>
