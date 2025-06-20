@@ -467,7 +467,7 @@ function EvalUrlString()
   if (uurl != "")
   { uurl = uurl.substring(1, uurl.length);
     llist = uurl.split("&");
-    for (ii=0; ii<llist.length; ii++) { if (window[llist[ii].split("=")[0]]) eval(llist[ii]); }
+    for (ii=0; ii<llist.length; ii++) eval(llist[ii]);
     el("w").value=w;
     el("h").value=h;
     el("sp").value=d;
