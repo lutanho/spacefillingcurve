@@ -385,7 +385,7 @@ function render(x0, y0, dir)
   dM=((x_new-x_old)*(x_old-x_old2)+(y_new-y_old)*(y_old-y_old2))?1000:707;
   M+=dM;
   if (x_old>0)
-  { if (RB>=3) ctx.fillStyle='hsl('+((Step++)*F|0)+',100%,50%)';
+  { if (RB>=3) ctx.fillStyle='hsl('+((Step++)*F|0)+',100%,'+(50-(B0>>4))+'%)';
     else
     { if (RB==2)
       { if (dM==1000) ctx.fillStyle=ctx.fillStyle=OLC;
@@ -417,7 +417,7 @@ function render(x0, y0, dir)
 var w=108, h=20, x_old, y_old, x_old2, y_old2, x_new, y_new, d=1, M, dM;
 var SCvs=9, SLin=8, BGC='#000000',OLC='#ff9900',DLC='#0066ff';
 var B0=0,O0=255,O1=153,O2=0,D0=0,D1=102,D2=255, Dir=2, MaxSize=2049, SO=1;
-var cvs, ctx, isVis=0, Step, F, Fm=240, RB=0, Timeout, Delay=100, LT=1;
+var cvs, ctx, isVis=0, Step, F, Fm=240, RB=0, Timeout, Delay=100, LT=1, FY=0;
 
 function spacefill(ll,tt,ww,hh) //left, top, width, height
 { //start of update 2025 for choosing exit side
@@ -501,14 +501,16 @@ function DrawSpaceFillingCurve()
   M=0;
   Step=0;
   F=Fm/(w*h);
-  var ss=new Date();  
+  var ss=new Date();
+  if (FY) { ctx.save(); ctx.transform(1,0,0,-1,0,SCvs*h+SCvs-SLin); }
   spacefill(1, 1, w, h);
+  if (FY) ctx.restore();
   var ee=new Date();
   //el("et").innerHTML=Math.round(100*M/(w*h))+"%&nbsp;&nbsp;&nbsp;"+(ee-ss)+" ms";
   el("et").innerHTML=Math.round(M/(10*w*h))+"%&nbsp;&nbsp;&nbsp;"+(ee-ss)+" ms";     
 }
 function UpdLink()
-{ el('link').innerHTML="[<a target=_blank href='spacefillingcurve.html?w="+w+"&h="+h+"&d="+d+"&SCvs="+SCvs+"&SLin="+SLin+"&B0="+el("bgc0").value+"&O0="+el("olc0").value+"&O1="+el("olc1").value+"&O2="+el("olc2").value+"&D0="+el("dlc0").value+"&D1="+el("dlc1").value+"&D2="+el("dlc2").value+"&RB="+RB+"&Dir="+Dir+"&LT="+LT+"&SO="+SO+"'>link</a>]";
+{ el('link').innerHTML="[<a target=_blank href='spacefillingcurve.html?w="+w+"&h="+h+"&d="+d+"&SCvs="+SCvs+"&SLin="+SLin+"&B0="+el("bgc0").value+"&O0="+el("olc0").value+"&O1="+el("olc1").value+"&O2="+el("olc2").value+"&D0="+el("dlc0").value+"&D1="+el("dlc1").value+"&D2="+el("dlc2").value+"&RB="+RB+"&Dir="+Dir+"&LT="+LT+"&SO="+SO+"&FY="+FY+"'>link</a>]";
 }
 function HideTools(bb)
 { if(bb) LT=1;
@@ -563,6 +565,10 @@ function ToggleStgs()
     el("dc").className='';
   }  
 }
+function ToggleFY()
+{ FY=1-FY;
+  Draw();
+}
 function setSCvs(vv)
 { SCvs=parseInt(vv);
   el("CvsZ").innerHTML="x "+SCvs;
@@ -612,18 +618,20 @@ function setDir(nn)
 }
 function invBGC()
 { var hh="0123456789abcdef";
-  var ii, cc, nn=255-parseInt(el("bgc0").value);
-  cc=hh[nn>>4]+hh[nn%16];
+  var ii, cc;
+  B0=255-parseInt(el("bgc0").value);
+  cc=hh[B0>>4]+hh[B0%16];
   BGC="#"+cc+cc+cc;
-  el("bgc0").value=nn;
+  el("bgc0").value=B0;
   el("bgc_rgb").style.backgroundColor=BGC;
   el("bgc_txt").innerHTML=BGC;
   Draw();
 }
 function updBGC(vv)
 { var hh="0123456789abcdef";
-  var ii, cc, nn=parseInt(vv);
-  cc=hh[nn>>4]+hh[nn%16];
+  var ii, cc;
+  B0=parseInt(vv);
+  cc=hh[B0>>4]+hh[B0%16];
   BGC="#"+cc+cc+cc;
   el("bgc_rgb").style.backgroundColor=BGC;
   el("bgc_txt").innerHTML=BGC;
@@ -781,7 +789,9 @@ a:hover{color:#00f}
 
 <td id="et" style='text-align:center'></td>
 <th style='text-align:right' id='link' title='direct link to this page with current settings in the url parameters'>[<a target=_blank href='spacefillingcurve.html'>link</a>]</th>
-<td title="enable/disable canvas click">&#9757;<input type="checkbox" onclick=HideTools(this.checked) checked title="enable/disable canvas click"></td>
+<td title="enable/disable canvas click"  style='cursor:pointer'>&#9757;<input type="checkbox" onclick='HideTools(this.checked)' checked title="enable/disable canvas click"></td>
+<td></td>
+<th title="flip curve upside down" style='cursor:pointer' onclick='ToggleFY()'>&#129415;</th>
 <td></td>
 <td><a href='https://photos.app.goo.gl/NtZm4yfvq463avgi6' target=_blank title='album with 50 sample pics created with this page (7 MB)'>&#128444;&#65039;</a><td>
 </tr></table></div>
