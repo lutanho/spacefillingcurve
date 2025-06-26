@@ -789,7 +789,8 @@ a:hover{color:#00f}
 
 <td id="et" style='text-align:center'></td>
 <th style='text-align:right' id='link' title='direct link to this page with current settings in the url parameters'>[<a target=_blank href='spacefillingcurve.html'>link</a>]</th>
-<td title="enable/disable canvas click"  style='cursor:pointer'>&#9757;<input type="checkbox" onclick='HideTools(this.checked)' checked title="enable/disable canvas click"></td>
+<td></td>
+<td title="enable/disable canvas click" style='cursor:pointer' onclick='document.getElementById("ht").click()'>&#9757;</td><td><input id="ht" type="checkbox" onclick='HideTools(this.checked)' checked title="enable/disable canvas click"></td>
 <td></td>
 <th title="flip curve upside down" style='cursor:pointer' onclick='ToggleFY()'>&#129415;</th>
 <td></td>
