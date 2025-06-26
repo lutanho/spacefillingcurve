@@ -314,10 +314,10 @@ function go(x0, y0, dxl, dyl, dxr, dyr, dir)
   { //if ((al%2==0)&&(ar%2==0)) 
     //  msg("9-part-error1: "+x0+", "+y0+", "+dxl+", "+dyl+", "+dxr+", "+dyr+", "+dir);        
     if (ar%2==0) //even-odd: oeo-ooo
-    { var dxl2=((dxl>0)-(dxl<0)+dxl)/3|0; //Math.round(dxl/3);
-      var dyl2=((dyl>0)-(dyl<0)+dyl)/3|0; //Math.round(dyl/3);
-      var dxr2=((dxr>0)-(dxr<0)+dxr)/3|0; //Math.round(dxr/3);
-      var dyr2=((dyr>0)-(dyr<0)+dyr)/3|0; //Math.round(dyr/3);
+    { var dxl2=(dxl>0)-(dxl<0)+dxl; dxl2=(dxl2-dxl2%3)/3; //Math.round(dxl/3);
+      var dyl2=(dyl>0)-(dyl<0)+dyl; dyl2=(dyl2-dyl2%3)/3; //Math.round(dyl/3);
+      var dxr2=(dxr>0)-(dxr<0)+dxr; dxr2=(dxr2-dxr2%3)/3; //Math.round(dxr/3);
+      var dyr2=(dyr>0)-(dyr<0)+dyr; dyr2=(dyr2-dyr2%3)/3; //Math.round(dyr/3);
       if ((dxl2+dyl2)%2==0) //make it odd  
       { dxl2=dxl-2*dxl2; 
         dyl2=dyl-2*dyl2; 
@@ -332,10 +332,10 @@ function go(x0, y0, dxl, dyl, dxr, dyr, dir)
       }
     }
     else //odd-even: ooo-oeo
-    { var dxl2=((dxl>0)-(dxl<0)+dxl)/3|0; //Math.round(dxl/3);
-      var dyl2=((dyl>0)-(dyl<0)+dyl)/3|0; //Math.round(dyl/3);
-      var dxr2=((dxr>0)-(dxr<0)+dxr)/3|0; //Math.round(dxr/3);
-      var dyr2=((dyr>0)-(dyr<0)+dyr)/3|0; //Math.round(dyr/3);
+    { var dxl2=(dxl>0)-(dxl<0)+dxl; dxl2=(dxl2-dxl2%3)/3; //Math.round(dxl/3);
+      var dyl2=(dyl>0)-(dyl<0)+dyl; dyl2=(dyl2-dyl2%3)/3; //Math.round(dyl/3);
+      var dxr2=(dxr>0)-(dxr<0)+dxr; dxr2=(dxr2-dxr2%3)/3; //Math.round(dxr/3);
+      var dyr2=(dyr>0)-(dyr<0)+dyr; dyr2=(dyr2-dyr2%3)/3; //Math.round(dyr/3);
       if ((dxr2+dyr2)%2==0) //make it odd  
       { dxr2=dxr-2*dxr2; 
         dyr2=dyr-2*dyr2; 
