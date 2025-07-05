@@ -26,13 +26,13 @@ function go(x0, y0, dxl, dyl, dxr, dyr, dir)
       ddy=(dyr<0)?-1:((dyr>0)?1:0); //dyr/ar;
       for (ii=0; ii<ar; ii++)
         render(x0+ii*ddx+(dxl+ddx-1)/2, y0+ii*ddy+(dyl+ddy-1)/2, dir);
-      return;  
+      return;
     }
     if (ar==1)
     { ddx=(dxl<0)?-1:((dxl>0)?1:0); //dxl/al;
       ddy=(dyl<0)?-1:((dyl>0)?1:0); //dyl/al;
       for (ii=0; ii<al; ii++)
-        render(x0+ii*ddx+(dxr+ddx-1)/2, y0+ii*ddy+(dyr+ddy-1)/2, dir);    
+        render(x0+ii*ddx+(dxr+ddx-1)/2, y0+ii*ddy+(dyr+ddy-1)/2, dir);
       return;
     }
     if (dir==-1)
@@ -41,18 +41,18 @@ function go(x0, y0, dxl, dyl, dxr, dyr, dir)
       for (ii=0; ii<ar; ii++)
         render(x0+ii*ddx+(dxl/2+ddx-1)/2, y0+ii*ddy+(dyl/2+ddy-1)/2, dir);
       for (ii=ar-1; ii>=0; ii--)
-        render(x0+ii*ddx+(dxl+dxl/2+ddx-1)/2, y0+ii*ddy+(dyl+dyl/2+ddy-1)/2, dir);        
-      return;  
-    } 
+        render(x0+ii*ddx+(dxl+dxl/2+ddx-1)/2, y0+ii*ddy+(dyl+dyl/2+ddy-1)/2, dir);
+      return;
+    }
     if (dir==1)
     { ddx=(dxl<0)?-1:((dxl>0)?1:0); //dxl/al;
       ddy=(dyl<0)?-1:((dyl>0)?1:0); //dyl/al;
       for (ii=0; ii<al; ii++)
         render(x0+ii*ddx+(dxr/2+ddx-1)/2, y0+ii*ddy+(dyr/2+ddy-1)/2, dir);
       for (ii=al-1; ii>=0; ii--)
-        render(x0+ii*ddx+(dxr+dxr/2+ddx-1)/2, y0+ii*ddy+(dyr+dyr/2+ddy-1)/2, dir);        
+        render(x0+ii*ddx+(dxr+dxr/2+ddx-1)/2, y0+ii*ddy+(dyr+dyr/2+ddy-1)/2, dir);
       return;  
-    } 
+    }
     if (dir==0)
     { if (ar==3)
       { ddx=(dxr<0)?-1:((dxr>0)?1:0); //dxr/ar;
@@ -64,7 +64,7 @@ function go(x0, y0, dxl, dyl, dxr, dyr, dir)
         render(x0+2*ddx+(dxl/2+ddx-1)/2, y0+2*ddy+(dyl/2+ddy-1)/2, dir);
         render(x0+2*ddx+(dxl+dxl/2+ddx-1)/2, y0+2*ddy+(dyl+dyl/2+ddy-1)/2, dir);
         return;
-      }  
+      }
       if (al==3)
       { ddx=(dxl<0)?-1:((dxl>0)?1:0); //dxl/al;
         ddy=(dyl<0)?-1:((dyl>0)?1:0); //dyl/al;
@@ -75,8 +75,8 @@ function go(x0, y0, dxl, dyl, dxr, dyr, dir)
         render(x0+2*ddx+(dxr/2+ddx-1)/2, y0+2*ddy+(dyr/2+ddy-1)/2, dir);
         render(x0+2*ddx+(dxr+dxr/2+ddx-1)/2, y0+2*ddy+(dyr+dyr/2+ddy-1)/2, dir);
         return;
-      }  
-    }      
+      }
+    }
     //msg("renderError");
     return;
   }
@@ -87,7 +87,7 @@ function go(x0, y0, dxl, dyl, dxr, dyr, dir)
     var dyl2=1+dyl>>1; //dyl2=Math.round(dyl/2);
     if ((dxr+dyr)%2==0) //right side is even
     { if ((dxl+dyl)%2==0) //make 2 parts from even side
-      { if (dir==-1) 
+      { if (dir==-1)
         { if ((dxl+dyl)%4==0) //make 2 parts even-even from even side
           { go(x0, y0, dxl2, dyl2, dxr, dyr, -1);
             go(x0+dxl2, y0+dyl2, dxl-dxl2, dyl-dyl2, dxr, dyr, -1);
@@ -123,7 +123,7 @@ function go(x0, y0, dxl, dyl, dxr, dyr, dir)
       { go(x0, y0, dxl2, dyl2, dxr, dyr, -1);
         go(x0+dxl2, y0+dyl2, dxl-dxl2, dyl-dyl2, dxr, dyr, 0);
         return;
-      }      
+      }
     }
   }
   //if (2*(abs(dxr)+abs(dyr))>3*(abs(dxl)+abs(dyl))) //right side much longer than left side
@@ -132,7 +132,7 @@ function go(x0, y0, dxl, dyl, dxr, dyr, dir)
     var dyr2=1+dyr>>1; //Math.round(dyr/2);
     if ((dxl+dyl)%2==0) //left side is even
     { if ((dxr+dyr)%2==0) //make 2 parts from even side
-      { if (dir==1) 
+      { if (dir==1)
         { if ((dxr+dyr)%4==0) //make 2 parts even-even from even side
           { go(x0, y0, dxl, dyl, dxr2, dyr2, 1);
             go(x0+dxr2, y0+dyr2, dxl, dyl, dxr-dxr2, dyr-dyr2, 1);
@@ -176,19 +176,19 @@ function go(x0, y0, dxl, dyl, dxr, dyr, dir)
   { var dxl2=1+dxl>>1; //Math.round(dxl/2);
     var dyl2=1+dyl>>1; //Math.round(dyl/2);
     var dxr2=1+dxr>>1; //Math.round(dxr/2);
-    var dyr2=1+dyr>>1; //Math.round(dyr/2);  
+    var dyr2=1+dyr>>1; //Math.round(dyr/2);
     if ((al%2==0)&&(ar%2==0)) //even-even
     { if ((dxl2+dyl2+dxr2+dyr2)%2==0) //ee-ee or oo-oo
       { if (dir==-1)
         { go(x0, y0, dxl2, dyl2, dxr2, dyr2, 1);
           go(x0+dxr2, y0+dyr2, dxl2, dyl2, dxr-dxr2, dyr-dyr2, -1);
-          go(x0+dxr2+dxl2, y0+dyr2+dyl2, dxl-dxl2, dyl-dyl2, dxr-dxr2, dyr-dyr2, -1);          
+          go(x0+dxr2+dxl2, y0+dyr2+dyl2, dxl-dxl2, dyl-dyl2, dxr-dxr2, dyr-dyr2, -1);
           go(x0+dxr2+dxl, y0+dyr2+dyl, dxl2-dxl, dyl2-dyl, -dxr2, -dyr2, 1);
         }
         else
         { go(x0, y0, dxl2, dyl2, dxr2, dyr2, -1);
           go(x0+dxl2, y0+dyl2, dxl-dxl2, dyl-dyl2, dxr2, dyr2, 1);
-          go(x0+dxr2+dxl2, y0+dyr2+dyl2, dxl-dxl2, dyl-dyl2, dxr-dxr2, dyr-dyr2, 1);          
+          go(x0+dxr2+dxl2, y0+dyr2+dyl2, dxl-dxl2, dyl-dyl2, dxr-dxr2, dyr-dyr2, 1);
           go(x0+dxr+dxl2, y0+dyr+dyl2, -dxl2, -dyl2, dxr2-dxr, dyr2-dyr, -1);
         }
       }
@@ -205,13 +205,13 @@ function go(x0, y0, dxl, dyl, dxr, dyr, dir)
             { if (dxl2>0) dxl2++;
               if (dxl2<0) dxl2--;
               if (dyl2>0) dyl2++;
-              if (dyl2<0) dyl2--;        
+              if (dyl2<0) dyl2--;
               go(x0, y0, dxl2, dyl2, dxr2, dyr2, -1);
               go(x0+dxl2, y0+dyl2, dxl-dxl2, dyl-dyl2, dxr2, dyr2, 1);
-              go(x0+dxr2+dxl2, y0+dyr2+dyl2, dxl-dxl2, dyl-dyl2, dxr-dxr2, dyr-dyr2, 1);          
+              go(x0+dxr2+dxl2, y0+dyr2+dyl2, dxl-dxl2, dyl-dyl2, dxr-dxr2, dyr-dyr2, 1);
               go(x0+dxr+dxl2, y0+dyr+dyl2, -dxl2, -dyl2, dxr2-dxr, dyr2-dyr, -1);
-            }    
-            else //transforming into e-1,e+1-oo = oo-oo 
+            }
+            else //transforming into e-1,e+1-oo = oo-oo
             { if (dxr2!=0) dxr2++; else dyr2++; 
               go(x0, y0, dxl2, dyl2, dxr2, dyr2, -1);
               go(x0+dxl2, y0+dyl2, dxl-dxl2, dyl-dyl2, dxr2, dyr2, 0);
@@ -232,13 +232,13 @@ function go(x0, y0, dxl, dyl, dxr, dyr, dir)
             { if (dxr2>0) dxr2++;
               if (dxr2<0) dxr2--;
               if (dyr2>0) dyr2++;
-              if (dyr2<0) dyr2--;          
+              if (dyr2<0) dyr2--;
               go(x0, y0, dxl2, dyl2, dxr2, dyr2, 1);
               go(x0+dxr2, y0+dyr2, dxl2, dyl2, dxr-dxr2, dyr-dyr2, -1);
               go(x0+dxr2+dxl2, y0+dyr2+dyl2, dxl-dxl2, dyl-dyl2, dxr-dxr2, dyr-dyr2, -1);
               go(x0+dxr2+dxl, y0+dyr2+dyl, dxl2-dxl, dyl2-dyl, -dxr2, -dyr2, 1);
             }
-            else //transforming into oo-e-1,e+1 = oo-oo 
+            else //transforming into oo-e-1,e+1 = oo-oo
             { if (dxl2!=0) dxl2++; else dyl2++;
               go(x0, y0, dxl2, dyl2, dxr2, dyr2, 1);
               go(x0+dxr2, y0+dyr2, dxl2, dyl2, dxr-dxr2, dyr-dyr2, 0);
@@ -251,7 +251,7 @@ function go(x0, y0, dxl, dyl, dxr, dyr, dir)
     }
     else //not even-even
     { if ((al%2!=0)&&(ar%2!=0)) //odd-odd
-      { if (dxl2%2!=0) dxl2=dxl-dxl2; //get it in a shape eo-eo 
+      { if (dxl2%2!=0) dxl2=dxl-dxl2; //get it in a shape eo-eo
         if (dyl2%2!=0) dyl2=dyl-dyl2;
         if (dxr2%2!=0) dxr2=dxr-dxr2;
         if (dyr2%2!=0) dyr2=dyr-dyr2;
@@ -271,7 +271,7 @@ function go(x0, y0, dxl, dyl, dxr, dyr, dir)
       else //even-odd or odd-even
       { if (al%2==0) //odd-even
         { if (dir==-1)
-          { if (dxr2%2!=0) dxr2=dxr-dxr2; //get it in a shape eo-xx 
+          { if (dxr2%2!=0) dxr2=dxr-dxr2; //get it in a shape eo-xx
             if (dyr2%2!=0) dyr2=dyr-dyr2;
             if (al>2)
             { go(x0, y0, dxl2, dyl2, dxr2, dyr2, 1);
@@ -290,7 +290,7 @@ function go(x0, y0, dxl, dyl, dxr, dyr, dir)
         }
         else //even-odd
         { if (dir==1)
-          { if (dxl2%2!=0) dxl2=dxl-dxl2; //get it in a shape xx-eo 
+          { if (dxl2%2!=0) dxl2=dxl-dxl2; //get it in a shape xx-eo
             if (dyl2%2!=0) dyl2=dyl-dyl2;
             if (ar>2)
             { go(x0, y0, dxl2, dyl2, dxr2, dyr2, -1);
@@ -305,25 +305,25 @@ function go(x0, y0, dxl, dyl, dxr, dyr, dir)
               go(x0+dxl2+dxr, y0+dyl2+dyr, -dxl2, -dyl2, dxr2-dxr, dyr2-dyr, -1);
             }
           }
-          //else msg("4-part-error2: "+x0+", "+y0+", "+dxl+", "+dyl+", "+dxr+", "+dyr+", "+dir);        
+          //else msg("4-part-error2: "+x0+", "+y0+", "+dxl+", "+dyl+", "+dxr+", "+dyr+", "+dir);
         }
       }
     }
-  } 
+  }
   else //dir==0 -> divide into 3x3 parts
   { //if ((al%2==0)&&(ar%2==0)) 
-    //  msg("9-part-error1: "+x0+", "+y0+", "+dxl+", "+dyl+", "+dxr+", "+dyr+", "+dir);        
+    //  msg("9-part-error1: "+x0+", "+y0+", "+dxl+", "+dyl+", "+dxr+", "+dyr+", "+dir);
     if (ar%2==0) //even-odd: oeo-ooo
     { var dxl2=(dxl>0)-(dxl<0)+dxl; dxl2=(dxl2-dxl2%3)/3; //Math.round(dxl/3);
       var dyl2=(dyl>0)-(dyl<0)+dyl; dyl2=(dyl2-dyl2%3)/3; //Math.round(dyl/3);
       var dxr2=(dxr>0)-(dxr<0)+dxr; dxr2=(dxr2-dxr2%3)/3; //Math.round(dxr/3);
       var dyr2=(dyr>0)-(dyr<0)+dyr; dyr2=(dyr2-dyr2%3)/3; //Math.round(dyr/3);
-      if ((dxl2+dyl2)%2==0) //make it odd  
-      { dxl2=dxl-2*dxl2; 
-        dyl2=dyl-2*dyl2; 
-      } 
-      if ((dxr2+dyr2)%2==0) //make it odd (not necessary, however results are better for 12x30, 18x30 etc.) 
-      { if (abs(dxr2+dyr2)!=2) 
+      if ((dxl2+dyl2)%2==0) //make it odd
+      { dxl2=dxl-2*dxl2;
+        dyl2=dyl-2*dyl2;
+      }
+      if ((dxr2+dyr2)%2==0) //make it odd (not necessary, however results are better for 12x30, 18x30 etc.)
+      { if (abs(dxr2+dyr2)!=2)
         { if (dxr<0) dxr2++;
           if (dxr>0) dxr2--;  //dont use else here !
           if (dyr<0) dyr2++;
@@ -337,8 +337,8 @@ function go(x0, y0, dxl, dyl, dxr, dyr, dir)
       var dxr2=(dxr>0)-(dxr<0)+dxr; dxr2=(dxr2-dxr2%3)/3; //Math.round(dxr/3);
       var dyr2=(dyr>0)-(dyr<0)+dyr; dyr2=(dyr2-dyr2%3)/3; //Math.round(dyr/3);
       if ((dxr2+dyr2)%2==0) //make it odd  
-      { dxr2=dxr-2*dxr2; 
-        dyr2=dyr-2*dyr2; 
+      { dxr2=dxr-2*dxr2;
+        dyr2=dyr-2*dyr2;
       } 
       if ((dxl2+dyl2)%2==0) //make it odd (not necessary, however results are better for 12x30, 18x30 etc.)
       { if (abs(dxl2+dyl2)!=2)
@@ -385,7 +385,14 @@ function render(x0, y0, dir)
   dM=((x_new-x_old)*(x_old-x_old2)+(y_new-y_old)*(y_old-y_old2))?1000:707;
   M+=dM;
   if (x_old>0)
-  { if (RB>=3) ctx.fillStyle='hsl('+((Step++)*F|0)+',100%,'+(50-(B0>>4))+'%)';
+  { if (RB>=3) 
+    { if (RB<=4) ctx.fillStyle='hsl('+((Step++)*F|0)+',100%,'+(50-(B0>>4))+'%)';
+      else
+      { DE+=((128-B0)*33)>>5;
+        if (DE>0) { ctx.fillStyle=DLC; DE-=128; }
+        else { ctx.fillStyle=ctx.fillStyle=OLC; DE+=128; }        
+      }
+    }
     else
     { if (RB==2)
       { if (dM==1000) ctx.fillStyle=ctx.fillStyle=OLC;
@@ -394,7 +401,7 @@ function render(x0, y0, dir)
       else
       { if (dir==0) ctx.fillStyle=ctx.fillStyle=DLC;
         else ctx.fillStyle=OLC;
-      }      
+      }
     }
     if (x_new==x_old) 
     { if (y_new>y_old) ctx.fillRect(SCvs*x_old-SLin, SCvs*y_old-SLin, SLin, SCvs+SLin);
@@ -404,7 +411,7 @@ function render(x0, y0, dir)
     { if (x_new>x_old) ctx.fillRect(SCvs*x_old-SLin, SCvs*y_old-SLin, SCvs+SLin, SLin);
       else ctx.fillRect(SCvs*x_new-SLin, SCvs*y_new-SLin, SCvs+SLin, SLin);
     }
-  }  
+  }
   x_old2=x_old;
   y_old2=y_old;
   x_old=x_new;
@@ -416,7 +423,7 @@ function render(x0, y0, dir)
 
 var w=108, h=20, x_old, y_old, x_old2, y_old2, x_new, y_new, d=1, M, dM;
 var SCvs=9, SLin=8, BGC='#000000',OLC='#ff9900',DLC='#0066ff';
-var B0=0,O0=255,O1=153,O2=0,D0=0,D1=102,D2=255, Dir=2, MaxSize=2049, SO=1;
+var B0=0,O0=255,O1=153,O2=0,D0=0,D1=102,D2=255, Dir=2, MaxSize=2049, SO=1, DE;
 var cvs, ctx, isVis=0, Step, F, Fm=240, RB=0, Timeout, Delay=100, LT=1, FY=0;
 
 function spacefill(ll,tt,ww,hh) //left, top, width, height
@@ -449,13 +456,13 @@ function spacefill(ll,tt,ww,hh) //left, top, width, height
       else go(ll, tt, ww, 0, 0, hh, -1); //go left->right
     }
     return;
-  }  
+  }
 //end of update 2025
- 
+
   if (hh>ww) //go top->down
   { if ((hh%2==1)&&(ww%2==0)) go(ll, tt, ww, 0, 0, hh, 0); //go diagonal
     else go(ll, tt, ww, 0, 0, hh, 1); //go top->down
-  }  
+  }
   else //go left->right
   { if ((ww%2==1)&&(hh%2==0)) go(ll, tt, ww, 0, 0, hh, 0); //go diagonal
     else go(ll, tt, ww, 0, 0, hh, -1); //go left->right
@@ -500,6 +507,7 @@ function DrawSpaceFillingCurve()
   y_old2=0;
   M=0;
   Step=0;
+  DE=0;
   F=Fm/(w*h);
   var ss=new Date();
   if (FY) { ctx.save(); ctx.transform(1,0,0,-1,0,SCvs*h+SCvs-SLin); }
@@ -546,7 +554,7 @@ function EvalUrlString()
     el("olc_txt").innerHTML=OLC;
     el("dlc_rgb").style.backgroundColor=DLC;
     el("dlc_txt").innerHTML=DLC;
-    if(RB>0) { el("rb").selectedIndex=RB; Fm=120*(RB-1); } 
+    if(RB>0) { el("rb").selectedIndex=RB; Fm=120*(RB-1); }
     if (el("dir"+Dir)) { el("dir"+Dir).checked=true; setDir(Dir); }
     else Dir=2;
   }
@@ -586,7 +594,7 @@ function ChangeSCvs(dd)
 function setSLin(vv)
 { SLin=parseInt(vv);
   el("LinZ").innerHTML="x "+SLin;
-  if (SCvs<SLin) { SCvs=SLin; el("cs").value=SCvs; el("CvsZ").innerHTML="x "+SCvs; } 
+  if (SCvs<SLin) { SCvs=SLin; el("cs").value=SCvs; el("CvsZ").innerHTML="x "+SCvs; }
   Draw();
 }
 function ChangeSLin(dd)
@@ -594,7 +602,7 @@ function ChangeSLin(dd)
   else return;
   el("ls").value=SLin;
   el("LinZ").innerHTML="x "+SLin;
-  if (SCvs<SLin) { SCvs=SLin; el("cs").value=SCvs; el("CvsZ").innerHTML="x "+SCvs; } 
+  if (SCvs<SLin) { SCvs=SLin; el("cs").value=SCvs; el("CvsZ").innerHTML="x "+SCvs; }
   Draw();
 }
 function updSO(ii)
@@ -641,12 +649,12 @@ function invOLC()
 { var hh="0123456789abcdef";
   var ii, cc=[];
   O0=255-parseInt(el("olc0").value);
-  O1=255-parseInt(el("olc1").value); 
-  O2=255-parseInt(el("olc2").value);   
-  el("olc0").value=O0; 
-  el("olc1").value=O1; 
+  O1=255-parseInt(el("olc1").value);
+  O2=255-parseInt(el("olc2").value);
+  el("olc0").value=O0;
+  el("olc1").value=O1;
   el("olc2").value=O2;
-  OLC="#"+hh[O0>>4]+hh[O0%16]+hh[O1>>4]+hh[O1%16]+hh[O2>>4]+hh[O2%16];  
+  OLC="#"+hh[O0>>4]+hh[O0%16]+hh[O1>>4]+hh[O1%16]+hh[O2>>4]+hh[O2%16];
   el("olc_rgb").style.backgroundColor=OLC;
   el("olc_txt").innerHTML=OLC;
   Draw();  
@@ -665,8 +673,8 @@ function invDLC()
 { var hh="0123456789abcdef";
   var ii, cc=[];
   D0=255-parseInt(el("dlc0").value);
-  D1=255-parseInt(el("dlc1").value); 
-  D2=255-parseInt(el("dlc2").value);   
+  D1=255-parseInt(el("dlc1").value);
+  D2=255-parseInt(el("dlc2").value);
   el("dlc0").value=D0; 
   el("dlc1").value=D1; 
   el("dlc2").value=D2;
@@ -688,7 +696,7 @@ function updDLC(jj,vv)
 function FlipColors()
 { var dd=OLC; oo=DLC;
   O0=el("dlc0").value; O1=el("dlc1").value; O2=el("dlc2").value;
-  D0=el("olc0").value; D1=el("olc1").value; D2=el("olc2").value;   
+  D0=el("olc0").value; D1=el("olc1").value; D2=el("olc2").value;
   el("dlc0").value=D0; el("dlc1").value=D1; el("dlc2").value=D2;
   el("olc0").value=O0; el("olc1").value=O1; el("olc2").value=O2;
   OLC=oo;
@@ -697,7 +705,7 @@ function FlipColors()
   el("olc_txt").innerHTML=OLC;
   el("dlc_rgb").style.backgroundColor=DLC;
   el("dlc_txt").innerHTML=DLC;
-  Draw();  
+  Draw();
 }
 function ChangeWidth(nn)
 { w=parseInt(el("w").value);
@@ -725,7 +733,7 @@ function ChangeWidthHeight(nn)
   { w+=nn*ddw;
     h+=nn*ddh;
   }
-  el("w").value=w; 
+  el("w").value=w;
   el("h").value=h;
   Draw();
 }
@@ -819,7 +827,7 @@ a:hover{color:#00f}
 <input id="bgc0" class=slider style="width:276px;height:7px" type="range" onmouseover="this.title=this.value" oninput="updBGC(this.value);" step="1" min="0" max="255" value="0"></td>
 </tr><tr>
 <th colspan=2>split to: ee-ee <input id="so" class=slider style="width:30px;height:7px" type="range" oninput="updSO(this.value);" value="1" step="1" min="0" max="1">oo-oo</th>
-<td rowspan=3 style='text-align:right;vertical-align:bottom'><select size=3 id='rb' onchange=useRainbow(this.selectedIndex)><option>&#129517;</option><option>&#128162;</option><option>&#128207;</option><option>&#129412;</option><option>&#127752;</option></select></td>
+<td rowspan=3 style='text-align:right;vertical-align:bottom'><select size=3 id='rb' onchange=useRainbow(this.selectedIndex)><option title='go diagonal vs go orthogonal in a 2x3 region'>&#129517;</option><option title='go diagonal vs go orthogonal in a 1x1 region (inherited)'>&#128162;</option><option title='how far away from two steps ago, sqrt(two) vs two'>&#128207;</option><option title='unique rainbow colors'>&#129412;</option><option title='double (red) rainbow colors'>&#127752;</option><option title='halftoning the background color - use slider above'>&#127929;</option></select></td>
 </tr>
 <tr>
 <td class=dtxt onclick="setDir(0)">go top &rArr; down <input type=radio value=0 name=dir id='dir0' onclick="setDir(0)"></td><th class=cdir onclick="setDir(0)" id="dc0">&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th>
